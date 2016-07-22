@@ -60,10 +60,13 @@ class PostgresDatabase < ApplicationRecord
   end
 
   def run_query(query)
+    Rails.logger.info connection_config
+
     `PGPASSWORD=#{connection_config[:password]} \
-      psql --host #{connection_config[:host]} --port #{connection_config[:port]} \
-        -U #{connection_config[:user]} \
-        -c "#{query};" \
-        template1`
+      psql --host #{connection_config[:host]} \
+        --port #{connection_config[:port]} \
+        -U #{connection_config[:username]} \
+        -d template1 \
+        -c "#{query};"`
   end
 end
