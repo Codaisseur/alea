@@ -61,6 +61,7 @@ class PostgresDatabase < ApplicationRecord
 
   def run_query(query)
     `PGPASSWORD=#{connection_config[:password]} \
+      psql --host #{connection_config[:host]} --port #{connection_config[:port]} -U #{connection_config[:user]} -c "#{query};" \
       psql -c "#{query};" \
       template1`
   end
