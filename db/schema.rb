@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160726174532) do
+ActiveRecord::Schema.define(version: 20160726212430) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "mongodb_services", force: :cascade do |t|
+    t.string   "name"
+    t.string   "db"
+    t.string   "app"
+    t.string   "host"
+    t.integer  "port"
+    t.string   "username"
+    t.string   "password"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "postgres_databases", force: :cascade do |t|
     t.string   "name"

@@ -15,7 +15,7 @@ service. The following steps roughly follow the ones in their example README,
 but we changed the keeper configuration a little bit to make it use persistent
 disk storage.
 
-## Set up the persistent Postgres data disks
+## Set up the persistent Postgres and MongoDB data disks
 
 First get an instance name from your cluster by running:
 
@@ -23,16 +23,21 @@ First get an instance name from your cluster by running:
 gcloud compute instances list
 ```
 
-Then create the disks, and format them with the script provided:
+Then create the disks, and format them with the scripts provided:
 
 ```
-bin/create_data_disk
+INSTANCE_NAME=gke-cluster-1-yyyy-node-xxx bin/create_data_disk
+INSTANCE_NAME=gke-cluster-1-yyyy-node-xxx bin/create_mongo_disk
 ```
 
 This will create 2 disks, one for each stolon-keeper:
 
   - pg-data-disk-1 (200GB)
   - pg-data-disk-2 (200GB)
+
+And another one for MongoDB:
+
+  - mongo-data-disk (200GB)
 
 ## Stolon Cluster setup
 

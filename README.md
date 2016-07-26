@@ -18,9 +18,31 @@ Refer to the Helm docs for install instructions.
 helmc install redis-cluster
 ```
 
-## Set up the Postgres service cluster
+## Set up the Postgres service cluster and MongoDB data disk
 
 Check out the [instructions](/kubernetes) to set up the services cluster on Kubernetes to get you started.
+
+## Install MongoDB
+
+```
+helmc repo add bitnami https://github.com/bitnami/charts
+helmc fetch bitnami/mongodb
+helmc edit mongodb
+```
+
+Update `tpl/values.toml` to match your needs.
+
+Then run the generators:
+
+```
+helmc generate --force mongodb
+```
+
+And install:
+
+```
+helmc install mongodb
+```
 
 ## Setting up the Manager App
 
@@ -40,6 +62,7 @@ kubectl get svc
 NAME                   CLUSTER-IP       EXTERNAL-IP   PORT(S)
 redis-sentinel         10.115.253.131   <none>        26379/TCP
 stolon-proxy-service   10.115.246.38    <none>        5432/TCP
+mongodb                10.115.240.18    <none>        27017/TCP
 ```
 
 ### Deploy the Backing Services Manager App
@@ -53,9 +76,16 @@ deis config:set DATABASE_URL=postgresql://stolon:password@10.115.246.38:5432/bac
 And same for `REDIS_URL`:
 
 ```
-deis config:set
-REDIS_URL=redis://10.115.253.131:26379/redis_services
+deis config:set REDIS_URL=redis://10.115.253.131:26379/redis_services
 ```
+
+And finally `MONGODB_URL`:
+
+```
+deis config:set MONGODB_URL=mongodb://root:rootPassword@10.115.240.18:27017/deis_backing_services
+```
+
+Use the root user and root password from the `values.toml` file that you edited with `helmc`.
 
 Then deploy the Rails app:
 
@@ -75,7 +105,7 @@ Then migrate the database:
 deis run rake db:migrate
 ```
 
-## Get a Database for new Apps
+## Get a Postgres database for new Apps
 
 When you are setting up a new app that needs to use PostgreSQL, you can create a database by `POST`ing to the Manager app's Postgres endpoint:
 
@@ -92,6 +122,7 @@ DATABASE_URL=postgres://meagan:itXA7CiKj33R7T4cS8s4@10.xxx.xxx.xx:5432/compress_
 ## Get a Redis db for new Apps
 
 Similarly, we can get a REDIS_URL for new apps:
+
 ```
 curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/redis_services
 ```
@@ -102,13 +133,27 @@ Which will return something like:
 REDIS_URL=redis://10.xxx.xxx.xx:26379/copy_port
 ```
 
+## Get a Mongo db for new Apps
+
+And unsurprisingly this works the same for MongoDB:
+
+```
+curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/mongodb_services
+```
+
+Which will return something like:
+
+```
+MONGODB_URL=mongodb://10.xxx.xxx.xx:27017/persistence_much
+```
+
 ## Roadmap
 
 We will add more services as we go, like:
 
   - √ ~~PostgreSQL~~
   - √ ~~Redis~~
-  - MongoDB
+  - √ ~~MongoDB~~
   - Memcached
 
 Feel free to help us out or leave any feedback in the issues :)
