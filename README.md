@@ -9,7 +9,16 @@ At [Codaisseur](https://www.codaisseur.com) we wanted to provide a Heroku like e
 We use Rails a lot, and PostgreSQL, so we needed an easy way for students to set up their apps despite the fact that Deis does not provide a PostgreSQL service for
 them like Heroku does. This manager app takes care of that.
 
-## Set up the services cluster first
+## Install a Redis cluster with Helm
+
+We'll use [Helm](http://helm.sh/) to set up a HA Redis cluster for us.
+Refer to the Helm docs for install instructions.
+
+```
+helmc install redis-cluster
+```
+
+## Set up the Postgres service cluster
 
 Check out the [instructions](/kubernetes) to set up the services cluster on Kubernetes to get you started.
 
@@ -28,7 +37,9 @@ deis create
 ```
 kubectl get svc
 NAME                   LABELS                                    SELECTOR                                       IP(S)           PORT(S)
-stolon-proxy-service   <none>                                    stolon-cluster=kube-stolon,stolon-proxy=true   10.247.50.217   5432/TCP
+redis-sentinel         10.115.253.131   <none>
+26379/TCP
+stolon-proxy-service   10.115.246.38    <none>        5432/TCP
 ```
 
 ### Deploy the Backing Services Manager App
@@ -36,7 +47,14 @@ stolon-proxy-service   <none>                                    stolon-cluster=
 Use the IP to create the `DATABASE_URL`, we will use the one mentioned in the above output:
 
 ```
-deis config:set DATABASE_URL=postgresql://stolon:password@10.247.50.217:5432/backing_services
+deis config:set DATABASE_URL=postgresql://stolon:password@10.115.246.38:5432/backing_services
+```
+
+And same for `REDIS_URL`:
+
+```
+deis config:set
+REDIS_URL=redis://10.115.253.131:26379/redis_services
 ```
 
 Then deploy the Rails app:
@@ -71,12 +89,26 @@ This will return your new `DATABASE_URL`:
 DATABASE_URL=postgres://meagan:itXA7CiKj33R7T4cS8s4@10.xxx.xxx.xx:5432/compress_program
 ```
 
+## Get a Redis db for new Apps
+
+Similarly, we can get a REDIS_URL for new apps:
+```
+curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/redis_services
+```
+
+Which will return something like:
+
+```
+REDIS_URL=redis://10.xxx.xxx.xx:26379/copy_port
+```
+
 ## Roadmap
 
 We will add more services as we go, like:
 
-  - Redis
+  - √ ~~PostgreSQL~~
+  - √ ~~Redis~~
   - MongoDB
   - Memcached
 
-Feel free to help us out :)
+Feel free to help us out or leave any feedback in the issues :)
