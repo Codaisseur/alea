@@ -36,9 +36,9 @@ deis create
 
 ```
 kubectl get svc
-NAME                   LABELS                                    SELECTOR                                       IP(S)           PORT(S)
-redis-sentinel         10.115.253.131   <none>
-26379/TCP
+
+NAME                   CLUSTER-IP       EXTERNAL-IP   PORT(S)
+redis-sentinel         10.115.253.131   <none>        26379/TCP
 stolon-proxy-service   10.115.246.38    <none>        5432/TCP
 ```
 
