@@ -70,7 +70,8 @@ class MongodbService < ApplicationRecord
     base = { database: db }
 
     if connection_config.user.present?
-      base.merge!(user: connection_config.user,
+      base.merge!(
+        user: connection_config.user,
         password: connection_config.password)
     end
 
