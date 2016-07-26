@@ -156,6 +156,8 @@ We will add more services as we go, like:
   - √ ~~MongoDB~~
   - Memcached
 
+We will create a Helm chart for Stolon.
+
 Feel free to help us out or leave any feedback in the issues :)
 
 ## Thanks to
