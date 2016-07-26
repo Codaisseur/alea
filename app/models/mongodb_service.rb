@@ -57,24 +57,11 @@ class MongodbService < ApplicationRecord
   end
 
   def setup_credentials
-    mongo_client = Mongo::Client.new(
-      [ "#{connection_config.host}:#{connection_config.port}" ],
-      connection_options)
+    mongo_client = Mongo::Client.new(root_mongo_url)
     mongo_client.database.users.create(
       username,
       password: password,
+      database: db,
       roles: [ Mongo::Auth::Roles::READ_WRITE ])
-  end
-
-  def connection_options
-    base = { database: db }
-
-    if connection_config.user.present?
-      base.merge!(
-        user: connection_config.user,
-        password: connection_config.password)
-    end
-
-    base
   end
 end
