@@ -11,7 +11,7 @@ them like Heroku does. This manager app takes care of that.
 
 ## Set up the services cluster first
 
-Check out the [instructions](/tree/master/kubernetes) to set up the services cluster on Kubernetes to get you started.
+Check out the [instructions](/kubernetes) to set up the services cluster on Kubernetes to get you started.
 
 ## Setting up the Manager App
 
