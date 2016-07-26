@@ -157,3 +157,9 @@ We will add more services as we go, like:
   - Memcached
 
 Feel free to help us out or leave any feedback in the issues :)
+
+## Thanks to
+
+  - The [Deis](https://deis.com/) Team for the awesomeness that is our own PaaS!
+  - The Bitnami team for their awesome list of [helmc charts](https://github.com/bitnami/charts)
+  - The Storint.lab team for their super duper HA Postgres solution [Stolon](https://github.com/sorintlab/stolon)
