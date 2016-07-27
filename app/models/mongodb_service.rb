@@ -57,7 +57,13 @@ class MongodbService < ApplicationRecord
   end
 
   def setup_credentials
-    mongo_client = Mongo::Client.new(root_mongo_url)
+    mongo_client = Mongo::Client.new(
+      [ "#{connection_config.host}:#{connection_config.port}" ],
+      user: connection_config.user,
+      password: connection_config.password)
+
+    mongo_client[:deis].insert_one({ test: "document" })
+
     mongo_client.database.users.create(
       username,
       password: password,
