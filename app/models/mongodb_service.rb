@@ -28,7 +28,7 @@ class MongodbService < ApplicationRecord
   def create_db_slug
     self.db = name.parameterize
 
-    while PostgresDatabase.where(host: host, db: db).count > 0
+    while MongodbService.where(host: host, db: db).count > 0
       self.db = [name, Devise.friendly_token].join("-").parameterize
     end
 
@@ -40,7 +40,7 @@ class MongodbService < ApplicationRecord
     self.username = base_name
 
     tries = 0
-    while PostgresDatabase.where(host: host, username: username).count > 0
+    while MongodbService.where(host: host, username: username).count > 0
       tries += 1
       self.username = base_name + "#{tries}"
     end
