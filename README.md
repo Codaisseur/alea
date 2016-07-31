@@ -44,6 +44,84 @@ And install:
 helmc install mongodb
 ```
 
+## Installing Memcached
+
+Fetch the `memcached` chart with `helmc`
+
+```
+helmc fetch memcached
+```
+
+Then make it a little easier to use by adding 2 services
+
+```
+helmc edit memcached
+```
+
+```yaml
+# manifests/memcached-rc.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached-1
+spec:
+  ports:
+  - name: memcached-port-1
+    port: 11211
+    protocol: TCP
+    targetPort: 11211
+  selector:
+    app: memcached-1
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached-2
+spec:
+  ports:
+  - name: memcached-port-2
+    port: 11211
+    protocol: TCP
+    targetPort: 11211
+  selector:
+    app: memcached-2
+
+---
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: memcached-1
+  labels:
+    app: memcached-1
+    heritage: helm
+spec:
+  replicas: 1
+  selector:
+    name: memcached-1
+    mode: cluster
+    provider: memcached
+  template:
+    metadata:
+      labels:
+        name: memcached-1
+        mode: cluster
+        provider: memcached
+    spec:
+```
+
+Then install it
+
+```
+helmc install memcached
+```
+
+---
+apiVersion: v1
+
 ## Setting up the Manager App
 
 ### Create a Deis app
@@ -60,9 +138,11 @@ deis create
 kubectl get svc
 
 NAME                   CLUSTER-IP       EXTERNAL-IP   PORT(S)
+memcached-1            10.115.249.176   <none>        11211/TCP
+memcached-2            10.115.244.86    <none>        11211/TCP
+mongodb                10.115.240.18    <none>        27017/TCP
 redis-sentinel         10.115.253.131   <none>        26379/TCP
 stolon-proxy-service   10.115.246.38    <none>        5432/TCP
-mongodb                10.115.240.18    <none>        27017/TCP
 ```
 
 ### Deploy the Backing Services Manager App
@@ -77,6 +157,12 @@ And same for `REDIS_URL`:
 
 ```
 deis config:set REDIS_URL=redis://10.115.253.131:26379/redis_services
+```
+
+Then the 2 `MEMCACHED_SERVERS` separated by commas:
+
+```
+deis config:set MEMCACHED_SERVERS=10.115.249.176,10.115.244.86
 ```
 
 And finally `MONGODB_URL`:
@@ -147,16 +233,25 @@ Which will return something like:
 MONGODB_URL=mongodb://10.xxx.xxx.xx:27017/persistence_much
 ```
 
+## Get a Memcached namespace for new Apps
+
+Memcached is configured with servers and a namespace:
+
+```
+curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/memcached_services
+MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
+```
+
 ## Roadmap
 
-We will add more services as we go, like:
+  - We will add more services as we go, like:
+    - √ ~~PostgreSQL~~
+    - √ ~~Redis~~
+    - √ ~~MongoDB~~
+    - √ ~~Memcached~~
+  - We will create a Helm chart for Stolon.
 
-  - √ ~~PostgreSQL~~
-  - √ ~~Redis~~
-  - √ ~~MongoDB~~
-  - Memcached
-
-We will create a Helm chart for Stolon.
+Let us know which services you are missing and we will try to add them.
 
 Feel free to help us out or leave any feedback in the issues :)
 
