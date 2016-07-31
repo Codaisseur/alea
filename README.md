@@ -111,6 +111,37 @@ spec:
         mode: cluster
         provider: memcached
     spec:
+      containers:
+      - name: memcached
+        image: "memcached:1.4.24"
+        ports:
+        - containerPort: 11211
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: memcached-2
+  labels:
+    heritage: helm
+    app: memcached-2
+spec:
+  replicas: 1
+  selector:
+    name: memcached-2
+    mode: cluster
+    provider: memcached
+  template:
+    metadata:
+      labels:
+        name: memcached-2
+        mode: cluster
+        provider: memcached
+    spec:
+      containers:
+      - name: memcached
+        image: "memcached:1.4.24"
+        ports:
+        - containerPort: 11211
 ```
 
 Then install it
@@ -239,6 +270,11 @@ Memcached is configured with servers and a namespace:
 
 ```
 curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/memcached_services
+```
+
+Which will return something like:
+
+```
 MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
 ```
 
