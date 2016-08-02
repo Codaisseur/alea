@@ -68,6 +68,6 @@ class MongodbService < ApplicationRecord
       username,
       password: password,
       database: db,
-      roles: [ Mongo::Auth::Roles::DATABASE_OWNER ])
+      roles: [ Mongo::Auth::Roles::DATABASE_OWNER, Mongo::Auth::Roles::READ_WRITE, Mongo::Auth::Roles::DATABASE_ADMIN ])
   end
 end
