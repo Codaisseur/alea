@@ -9,6 +9,12 @@ At [Codaisseur](https://www.codaisseur.com) we wanted to provide a Heroku like e
 We use Rails a lot, and PostgreSQL, so we needed an easy way for students to set up their apps despite the fact that Deis does not provide a PostgreSQL service for
 them like Heroku does. This manager app takes care of that.
 
+## Prerequisites
+
+  - A working Deis workflow cluster on k8s
+  - Helm classic installed and set up
+  - Deis client installed and set up
+
 ## Install a Redis cluster with Helm
 
 We'll use [Helm](http://helm.sh/) to set up a HA Redis cluster for us.
