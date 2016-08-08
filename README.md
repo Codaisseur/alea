@@ -178,6 +178,13 @@ stolon-proxy-service   10.115.246.38    <none>        5432/TCP
 
 ### Deploy the Backing Services Manager App
 
+The app runs from a Docker container, and you will need to set a
+`SECRET_KEY_BASE`:
+
+```
+deis config:set SECRET_KEY_BASE=$(rails secret)
+```
+
 Use the IP to create the `DATABASE_URL`, we will use the one mentioned in the above output:
 
 ```
