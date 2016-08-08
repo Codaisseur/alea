@@ -1,11 +1,14 @@
 FROM ruby:alpine
 
+# Add Bash
+
 # Install Mongo (we only need the client)
 RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
   apk add --no-cache mongodb
 
 RUN apk --update add --virtual build-dependencies build-base ruby-dev openssl-dev \
-  libxml2-dev libxslt-dev postgresql-dev libc-dev linux-headers nodejs tzdata
+  libxml2-dev libxslt-dev postgresql-dev libc-dev linux-headers nodejs tzdata bash && \
+  rm -rf /var/cache/apk/*
 
 ADD Gemfile /app/
 ADD Gemfile.lock /app/
@@ -24,4 +27,4 @@ ENV RAILS_SERVE_STATIC_FILES true
 
 WORKDIR /app
 
-CMD ["bundle", "exec", "rails", "s", "-p", $PORT]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
