@@ -7,7 +7,8 @@ RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositorie
   apk add --no-cache mongodb
 
 RUN apk --update add --virtual build-dependencies build-base ruby-dev openssl-dev \
-  libxml2-dev libxslt-dev postgresql-dev libc-dev linux-headers nodejs tzdata bash && \
+  libxml2-dev libxslt-dev postgresql-dev postgresql-client libc-dev linux-headers \
+  nodejs tzdata bash && \
   rm -rf /var/cache/apk/*
 
 ADD Gemfile /app/
