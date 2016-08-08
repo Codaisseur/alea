@@ -199,7 +199,7 @@ deis config:set MEMCACHED_SERVERS=10.115.249.176,10.115.244.86
 And finally `MONGODB_URL`:
 
 ```
-deis config:set MONGODB_URL=mongodb://root:rootPassword@10.115.240.18:27017/deis_backing_services
+deis config:set MONGODB_URL=mongodb://root:rootPassword@10.115.240.18:27017/admin
 ```
 
 Use the root user and root password from the `values.toml` file that you edited with `helmc`.

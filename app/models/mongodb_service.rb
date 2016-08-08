@@ -49,25 +49,17 @@ class MongodbService < ApplicationRecord
   private
 
   def connection_config
-    URI(root_mongo_url)
+    URI(admin_mongo_url)
   end
 
-  def root_mongo_url
-    ENV["MONGODB_URL"] || "mongodb://localhost:27017/deis_backing_services"
+  def admin_mongo_url
+    ENV["MONGODB_URL"] || "mongodb://localhost:27017/admin"
   end
 
   def setup_credentials
-    mongo_client = Mongo::Client.new(
-      [ "#{connection_config.host}:#{connection_config.port}" ],
-      user: connection_config.user,
-      password: connection_config.password)
-
-    mongo_client[:deis].insert_one({ test: "document" })
-
-    mongo_client.database.users.create(
-      username,
-      password: password,
-      database: db,
-      roles: [ Mongo::Auth::Roles::DATABASE_OWNER, Mongo::Auth::Roles::READ_WRITE, Mongo::Auth::Roles::DATABASE_ADMIN ])
+    `mongo #{admin_mongo_url} << EOF
+use #{db}
+db.createUser({user: '#{username}', pwd: '#{password}', roles:[{role:'dbOwner',db:'#{db}'}]})
+EOF`
   end
 end
