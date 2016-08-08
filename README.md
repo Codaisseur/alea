@@ -298,11 +298,18 @@ MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
     - √ ~~Redis~~
     - √ ~~MongoDB~~
     - √ ~~Memcached~~
-  - We will create a Helm chart for Stolon.
+  - Create a Helm chart for Stolon.
+  - Create Helm charts for the entire cluster
 
 Let us know which services you are missing and we will try to add them.
 
 Feel free to help us out or leave any feedback in the issues :)
+
+## Changelog
+
+  - **2016-07-26** Initial project with PostgreSQL service
+  - **2016-07-31** Added Redis, MongoDB, and Memcached services
+  - **2016-08-08** Fixed MongoDB issues, running from Dockerfile now
 
 ## Thanks to
 
