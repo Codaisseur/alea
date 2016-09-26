@@ -21,12 +21,12 @@ ADD . /app
 RUN chown -R nobody:nogroup /app
 USER nobody
 
+EXPOSE 5000
 ENV PORT 5000
 ENV RAILS_ENV production
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_SERVE_STATIC_FILES true
 
-EXPOSE 5000
 
 WORKDIR /app
 
