@@ -29,3 +29,20 @@ spec:
   gcePersistentDisk:
     pdName: "pg-data-disk-2"
     fsType: "ext4"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pg-data-disk-3
+  labels:
+    name: pg-data-disk-3
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: "pg-data-disk-3"
+    fsType: "ext4"

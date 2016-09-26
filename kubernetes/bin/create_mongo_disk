@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # gcloud compute instances list
-if [ -z $INSTANCE_NAME]; then
+if [ -z $INSTANCE_NAME ]; then
   echo "INSTANCE_NAME is not set.
 
   Get instances with:
     gcloud compute instances list
 
   Then pass in an instance name:
-    INSTANCE_NAME=gke-cluster-1-yyyy-node-xxx ./create_data_disk"
+    INSTANCE_NAME=gke-cluster-1-yyyy-node-xxx ./create_mongo_disk"
 fi
 
 # Create the disk

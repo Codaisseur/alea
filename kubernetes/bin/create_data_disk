@@ -1,7 +1,9 @@
 #!/bin/bash
 
+set -e
+
 # gcloud compute instances list
-if [ -z $INSTANCE_NAME]; then
+if [ -z $INSTANCE_NAME ]; then
   echo "INSTANCE_NAME is not set.
 
   Get instances with:
@@ -9,11 +11,14 @@ if [ -z $INSTANCE_NAME]; then
 
   Then pass in an instance name:
     INSTANCE_NAME=gke-cluster-1-yyyy-node-xxx bin/create_data_disk"
+
+  exit 1
 fi
 
 # Create 2 disks
 gcloud compute disks create pg-data-disk-1 --size 200GB
 gcloud compute disks create pg-data-disk-2 --size 200GB
+gcloud compute disks create pg-data-disk-3 --size 200GB
 
 # Attach, format, detach disk 1
 gcloud compute instances attach-disk $INSTANCE_NAME --disk pg-data-disk-1
@@ -24,3 +29,11 @@ gcloud compute instances detach-disk $INSTANCE_NAME --disk pg-data-disk-1
 gcloud compute instances attach-disk $INSTANCE_NAME --disk pg-data-disk-2
 gcloud compute ssh $INSTANCE_NAME --command 'sudo mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb'
 gcloud compute instances detach-disk $INSTANCE_NAME --disk pg-data-disk-2
+
+# Attach, format, detach disk 3
+gcloud compute instances attach-disk $INSTANCE_NAME --disk pg-data-disk-3
+gcloud compute ssh $INSTANCE_NAME --command 'sudo mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb'
+gcloud compute instances detach-disk $INSTANCE_NAME --disk pg-data-disk-3
+
+kubectl create -f postgres-data-claim.yaml
+kubectl create -f postgres-persistence.yaml
