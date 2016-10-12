@@ -28,13 +28,12 @@ class PostgresDatabase < ApplicationRecord
   end
 
   def create_db_slug
-    self.db = name.parameterize
+    self.db = name.parameterize.gsub(/\-/, '_')
 
     while PostgresDatabase.where(host: host, db: db).count > 0
-      self.db = [name, Devise.friendly_token].join("-").parameterize
+      self.db = [name, Devise.friendly_token].
+        join("-").parameterize.gsub(/\-/, '_')
     end
-
-    self.db = db.gsub(/\-/, '_')
   end
 
   def create_username
