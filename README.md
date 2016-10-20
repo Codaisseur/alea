@@ -1,5 +1,7 @@
 # Deis Backing Services Manager
 
+[![](https://quay.io/repository/codaisseur/deis-backing-services-api/status)]https://quay.io/repository/codaisseur/deis-backing-services-api)
+
 At [Codaisseur](https://www.codaisseur.com) we wanted to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
 
 [![](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)

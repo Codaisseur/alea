@@ -1,9 +1,14 @@
 FROM ruby:alpine
 
 # Add Bash
+RUN echo "ipv6" >> /etc/modules
 
 # Install Mongo (we only need the client)
-RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+RUN echo 'http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
+  echo 'http://nl.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && \
+  echo 'http://nl.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
+  apk update && \
+  apk upgrade && \
   apk add --no-cache mongodb
 
 RUN apk --update add --virtual build-dependencies build-base ruby-dev openssl-dev \
