@@ -1,0 +1,11 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: {{ .Values.storage.standardClassName }}
+  labels:
+    heritage: deis-backing-services
+provisioner: {{ .Values.storage.provisioner }}
+parameters:
+  type: {{ .Values.storage.standardType }}
+  zone: {{ default "" .Values.storage.zone }}
+  iopsPerGB: {{ default "" .Values.storage.iopsPerGB }}
