@@ -1,0 +1,174 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: stolon-keeper-rc-1
+spec:
+  replicas: 1
+  selector:
+    name: stolon-keeper-1
+  template:
+    metadata:
+      labels:
+        heritage: deis-backing-services
+        name: stolon-keeper-1
+        stolon-cluster: "kube-stolon"
+        stolon-keeper: "true"
+    spec:
+      containers:
+      - name: stolon-keeper-1
+        image: sorintlab/stolon:master
+        env:
+          - name: KEEPER
+            value: "true"
+          - name: STKEEPER_CLUSTER_NAME
+          # TODO(sgotti) Get cluster name from "stoloncluster" label using a downward volume api instead of duplicating the name here
+            value: "kube-stolon"
+          - name: STKEEPER_STORE_BACKEND
+            value: "etcd" # Or consul
+          - name: STKEEPER_STORE_ENDPOINTS
+            value: "etcd-clients:2379"
+            # Enable debugging
+          - name: STKEEPER_PG_REPL_USERNAME
+            value: "repluser"
+            # Or use a password file like in the below supersuser password
+          - name: STKEEPER_PG_REPL_PASSWORD
+            value: "replpassword"
+          - name: STKEEPER_PG_SU_USERNAME
+            value: "stolon"
+          - name: STKEEPER_PG_SU_PASSWORDFILE
+            value: "/etc/secrets/stolon/password"
+          - name: STKEEPER_DEBUG
+            value: "true"
+        ports:
+          - containerPort: 5431
+          - containerPort: 5432
+        volumeMounts:
+        - mountPath: /stolon-data
+          name: data
+        - mountPath: /etc/secrets/stolon
+          name: stolon
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: "{{ .Values.postgres.diskNamePrefix }}-claim-1"
+        - name: stolon
+          secret:
+            secretName: stolon
+
+---
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: stolon-keeper-rc-2
+spec:
+  replicas: 1
+  selector:
+    name: stolon-keeper-2
+  template:
+    metadata:
+      labels:
+        heritage: deis-backing-services
+        name: stolon-keeper-2
+        stolon-cluster: "kube-stolon"
+        stolon-keeper: "true"
+    spec:
+      containers:
+      - name: stolon-keeper-2
+        image: sorintlab/stolon:master
+        env:
+          - name: KEEPER
+            value: "true"
+          - name: STKEEPER_CLUSTER_NAME
+          # TODO(sgotti) Get cluster name from "stoloncluster" label using a downward volume api instead of duplicating the name here
+            value: "kube-stolon"
+          - name: STKEEPER_STORE_BACKEND
+            value: "etcd" # Or consul
+          - name: STKEEPER_STORE_ENDPOINTS
+            value: "etcd-clients:2379"
+            # Enable debugging
+          - name: STKEEPER_PG_REPL_USERNAME
+            value: "repluser"
+            # Or use a password file like in the below supersuser password
+          - name: STKEEPER_PG_REPL_PASSWORD
+            value: "replpassword"
+          - name: STKEEPER_PG_SU_USERNAME
+            value: "stolon"
+          - name: STKEEPER_PG_SU_PASSWORDFILE
+            value: "/etc/secrets/stolon/password"
+          - name: STKEEPER_DEBUG
+            value: "true"
+        ports:
+          - containerPort: 5431
+          - containerPort: 5432
+        volumeMounts:
+        - mountPath: /stolon-data
+          name: data
+        - mountPath: /etc/secrets/stolon
+          name: stolon
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: "{{ .Values.postgres.diskNamePrefix }}-claim-2"
+        - name: stolon
+          secret:
+            secretName: stolon
+
+---
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: stolon-keeper-rc-3
+spec:
+  replicas: 1
+  selector:
+    name: stolon-keeper-3
+  template:
+    metadata:
+      labels:
+        heritage: deis-backing-services
+        name: stolon-keeper-3
+        stolon-cluster: "kube-stolon"
+        stolon-keeper: "true"
+    spec:
+      containers:
+      - name: stolon-keeper-3
+        image: sorintlab/stolon:master
+        env:
+          - name: KEEPER
+            value: "true"
+          - name: STKEEPER_CLUSTER_NAME
+          # TODO(sgotti) Get cluster name from "stoloncluster" label using a downward volume api instead of duplicating the name here
+            value: "kube-stolon"
+          - name: STKEEPER_STORE_BACKEND
+            value: "etcd" # Or consul
+          - name: STKEEPER_STORE_ENDPOINTS
+            value: "etcd-clients:2379"
+            # Enable debugging
+          - name: STKEEPER_PG_REPL_USERNAME
+            value: "repluser"
+            # Or use a password file like in the below supersuser password
+          - name: STKEEPER_PG_REPL_PASSWORD
+            value: "replpassword"
+          - name: STKEEPER_PG_SU_USERNAME
+            value: "stolon"
+          - name: STKEEPER_PG_SU_PASSWORDFILE
+            value: "/etc/secrets/stolon/password"
+          - name: STKEEPER_DEBUG
+            value: "true"
+        ports:
+          - containerPort: 5431
+          - containerPort: 5432
+        volumeMounts:
+        - mountPath: /stolon-data
+          name: data
+        - mountPath: /etc/secrets/stolon
+          name: stolon
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: "{{ .Values.postgres.diskNamePrefix }}-claim-3"
+        - name: stolon
+          secret:
+            secretName: stolon
