@@ -35,4 +35,4 @@ ENV RAILS_SERVE_STATIC_FILES true
 
 WORKDIR /app
 
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD ["./run.sh"]

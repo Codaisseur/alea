@@ -4,7 +4,7 @@ threads Integer(ENV['MIN_THREADS']  || 1), Integer(ENV['MAX_THREADS'] || 16)
 preload_app!
 
 rackup      DefaultRackup
-port        ENV['PORT']     || 3000
+port        ENV['PORT']     || 5000
 environment ENV['RAILS_ENV'] || 'development'
 
 on_worker_boot do
