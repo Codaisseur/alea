@@ -20,3 +20,4 @@ kubernetes/bin/deisconfig
 charts/deis-backing-services-0.1.0.tgz
 charts/dev.yaml
 charts/api-ssl.yaml
+custom.yaml
