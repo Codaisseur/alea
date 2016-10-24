@@ -28,11 +28,11 @@ spec:
               name: http
           env:
             - name: "DATABASE_URL"
-              value: "postgres://{{ default "postgres" .Values.postgres.username }}:{{ .Values.postgres.password }}@postgres-pooling-service:5432/{{ .Values.postgres.database }}"
+              value: "postgres://{{ default "postgres" .Values.postgres.username }}:{{ .Values.postgres.password }}@postgres-pooling-service.services:5432/{{ .Values.postgres.database }}"
             - name: "MEMCACHED_SERVERS"
-              value: "memcached-1,memcached-2"
+              value: "memcached-1.services,memcached-2.services"
             - name: "MONGODB_URL"
-              value: "mongodb://root:{{ .Values.mongo.dbRootPassword }}@mongodb-service:27017/admin"
+              value: "mongodb://root:{{ .Values.mongo.dbRootPassword }}@mongodb-service.services:27017/admin"
             - name: "PORT"
               value: "5000"
             - name: "RAILS_ENV"
@@ -40,7 +40,7 @@ spec:
             - name: "RACK_ENV"
               value: production
             - name: "REDIS_URL"
-              value: "redis://redis-sentinel:26379/redis_services"
+              value: "redis://redis-sentinel.services:26379/redis_services"
             - name: "SECRET_KEY_BASE"
               valueFrom:
                 secretKeyRef:
