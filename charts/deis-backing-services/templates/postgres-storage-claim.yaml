@@ -1,41 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: "{{ .Values.postgres.diskNamePrefix }}-claim-1"
-  labels:
-    heritage: deis-backing-services
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "{{ .Values.postgres.storageClassName }}"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.postgres.diskSize }}
-
----
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: "{{ .Values.postgres.diskNamePrefix }}-claim-2"
-  labels:
-    heritage: deis-backing-services
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "{{ .Values.postgres.storageClassName }}"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.postgres.diskSize }}
-
----
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: "{{ .Values.postgres.diskNamePrefix }}-claim-3"
+  name: "{{ .Values.postgres.diskName }}-claim"
   labels:
     heritage: deis-backing-services
   annotations:

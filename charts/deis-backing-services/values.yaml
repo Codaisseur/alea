@@ -43,10 +43,14 @@ mongo:
   dbDatabase: "backing-services-api"
 
 postgres:
-  diskNamePrefix: pg-data-disk
+  imageTag: latest
+  imagePullPolicy: IfNotPresent
+  diskName: pg-data-disk
   storageClassName: fast
   diskSize: 200Gi
+  username: postgres
   password: password
+  database: backing_services
 
 redis:
   diskName: redis-data-disk
@@ -55,7 +59,8 @@ redis:
 
 api:
   imageTag: v0.1.0 # latest
-  imagePullPolicy: "Always" # "IfNotPrsesent"
+  imagePullPolicy: "Always" # "IfNotPresent"
   # Create a secret by running:
   # docker run --rm quay.io/codaisseur/deis-backing-services-api rails secret
+  # then put it in your custom.yaml.
   secretKeyBase: ""

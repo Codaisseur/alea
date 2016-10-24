@@ -27,22 +27,12 @@ spec:
             - containerPort: 5000
               name: http
           env:
-            - name: "STOLON_PG_SU_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: stolon
-                  key: password
-            - name: "MONGODB_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-apps
-                  key: mongodb-password
             - name: "DATABASE_URL"
-              value: "postgres://stolon:{{ default "password" .Values.postgres.password }}@stolon-proxy-service:5432/backing_services"
+              value: "postgres://{{ default "postgres" .Values.postgres.username }}:{{ .Values.postgres.password }}@postgres-pooling-service:5432/{{ .Values.postgres.database }}"
             - name: "MEMCACHED_SERVERS"
               value: "memcached-1,memcached-2"
             - name: "MONGODB_URL"
-              value: "mongodb://root:${MONGODB_PASSWORD}@mongodb-service:27017/admin"
+              value: "mongodb://root:{{ .Values.mongo.dbRootPassword }}@mongodb-service:27017/admin"
             - name: "PORT"
               value: "5000"
             - name: "RAILS_ENV"

@@ -6,6 +6,7 @@ metadata:
     app: backing-services-api
     heritage: deis-backing-services
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
