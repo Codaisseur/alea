@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: api-ingress
+  labels:
+    app: backing-services-api
+    heritage: deis-backing-services
+spec:
+  tls:
+  - hosts:
+    - {{ default "services.example.com" .Values.api.hostname }}
+    secretName: api-ssl-cert
+  backend:
+    serviceName: services-api
+    servicePort: 80

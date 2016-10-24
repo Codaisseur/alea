@@ -11,10 +11,10 @@ spec:
   template:
     metadata:
       labels:
-        heritage: deis-backing-services
         name: stolon-proxy
         stolon-cluster: "kube-stolon"
         stolon-proxy: "true"
+        heritage: deis-backing-services
     spec:
       containers:
       - name: stolon-proxy
@@ -28,7 +28,7 @@ spec:
           - name: STPROXY_STORE_BACKEND
             value: "etcd" # Or consul
           - name: STPROXY_STORE_ENDPOINTS
-            value: "etcd-clients:2379"
+            value: "etcd-service:2379"
             # Enable debugging
           - name: STPROXY_DEBUG
             value: "true"

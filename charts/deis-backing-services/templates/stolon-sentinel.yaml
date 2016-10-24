@@ -11,10 +11,10 @@ spec:
   template:
     metadata:
       labels:
-        heritage: deis-backing-services
         name: stolon-sentinel
         stolon-cluster: "kube-stolon"
         stolon-sentinel: "true"
+        heritage: deis-backing-services
     spec:
       containers:
       - name: stolon-sentinel
@@ -30,7 +30,7 @@ spec:
           - name: STSENTINEL_STORE_BACKEND
             value: "etcd" # Or consul
           - name: STSENTINEL_STORE_ENDPOINTS
-            value: "etcd-clients:2379"
+            value: "etcd-service:2379"
           - name: STSENTINEL_KEEPER_KUBE_LABEL_SELECTOR
             value: "stolon-cluster=kube-stolon,stolon-keeper=true"
             # Enable debugging

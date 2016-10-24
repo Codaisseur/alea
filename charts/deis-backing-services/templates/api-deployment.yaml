@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: backing-services-api
-          image: "quay.io/codaisseur/deis-backing-services-api:latest"
+          image: "quay.io/codaisseur/deis-backing-services-api:{{ .Values.api.imageTag }}"
           imagePullPolicy: "Always"
           ports:
             - containerPort: 5000

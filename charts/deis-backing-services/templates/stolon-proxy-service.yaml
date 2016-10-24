@@ -6,7 +6,8 @@ metadata:
     heritage: deis-backing-services
 spec:
   ports:
-    - port: 5432
+    - name: postgres
+      port: 5432
       targetPort: 5432
   selector:
     stolon-proxy: "true"

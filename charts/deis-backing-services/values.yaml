@@ -54,7 +54,7 @@ redis:
   diskSize: 200Gi
 
 api:
-  imageTag: "latest"
+  imageTag: v0.1.0 # latest
   imagePullPolicy: "Always" # "IfNotPrsesent"
   # Create a secret by running:
   # docker run --rm quay.io/codaisseur/deis-backing-services-api rails secret
