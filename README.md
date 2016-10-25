@@ -244,3 +244,4 @@ Feel free to help us out or leave any feedback in the issues :)
   - @paunin for his [postgresql cluster setup](https://github.com/paunin/postgres-docker-cluster)
 
 [helm]: https://github.com/kubernetes/helm
+[codaisseur]: https://www.codaisseur.com
