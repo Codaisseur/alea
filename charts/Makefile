@@ -8,18 +8,18 @@ configure:
 	./configure.sh
 
 install: build
-	helm install --namespace services --name services --values=custom.yaml alea
-	if [ -f api-ssl.yaml ]; then kubectl create -f api-ssl.yaml; fi
+	helm install --namespace services --name alea --values=settings.yaml alea
+	if [ -f controller-ssl.yaml ]; then kubectl create -f controller-ssl.yaml; fi
 
 upgrade: build
-	helm upgrade services --namespace services --values=custom.yaml alea
+	helm upgrade alea --namespace services --values=custom.yaml alea
 
 clean:
-	helm delete services --purge
+	helm delete alea --purge
 	kubectl delete -n services ns services
 
 ssl:
-	kubectl create -f api-ssl.yaml --namespace=services
+	kubectl create -f controller-ssl.yaml --namespace=services
 
 run:
 	kubectl run api --image=quay.io/codaisseur/alea-controller -i --tty -n services /bin/bash

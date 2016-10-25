@@ -1,6 +1,6 @@
 apiVersion: v1
 entries:
-  alpine:
+  alea:
   - created: 2016-10-06T16:23:20.499814565-06:00
     description: Deploy a basic Alpine Linux pod
     digest: 99c76e403d752c84ead610644d4b1c2f2b453a74b921f422b9dcb8a7c8b559cd

@@ -1,15 +1,14 @@
-# Deis Backing Services Manager
+# Alea - Deis Backing Services Manager
 
-[![](https://quay.io/repository/codaisseur/deis-backing-services-api/status)]https://quay.io/repository/codaisseur/deis-backing-services-api)
+[![](https://quay.io/repository/codaisseur/alea-controller/status)]https://quay.io/repository/codaisseur/alea-controller)
 
-At [Codaisseur](https://www.codaisseur.com) we wanted to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
+At [Codaisseur](https://www.codaisseur.com) we want to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
 
 [![](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)
 
 ## Anyway..
 
-We use Rails a lot, and PostgreSQL, so we needed an easy way for students to set up their apps despite the fact that Deis does not provide a PostgreSQL service for
-them like Heroku does. This manager app takes care of that.
+We use Rails a lot, and PostgreSQL, so we needed an easy way for students to set up their apps despite the fact that Deis does not provide a PostgreSQL service for them like Heroku does. This manager app takes care of that.
 
 It also has a few other of our favorite services:
 
@@ -27,8 +26,9 @@ It also has a few other of our favorite services:
 
   - Create a file called `settings.yaml` and set variables you would like to
     change. See **Supported Values** section below.
-  - Generate a `SECRET_KEY_BASE` token for the Rails Services API: `docker run --rm quay.io/codaisseur/deis-backing-services-api rails secret` and put it in your
+  - Generate a `SECRET_KEY_BASE` token for the Rails Services API: `docker run --rm quay.io/codaisseur/alea-controller rails secret` and put it in your
     `settings.yaml`:
+  - Set up SSL for the Controller Ingress (see below)
 
 ```yaml
 # settings.yaml
@@ -85,15 +85,33 @@ Key | Default Value | Description
 `storageClassName` | `slow` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
 `diskSize` | `200Gi` | Disk size of the Redis persistent disk.
 
-### API (`api`)
+### API (`controller`)
 
 Key | Default Value | Description
 --- | ------------- | -----------
-`imageTag` | `v0.1.0` | Tag for the quay.io/codaisseur/deis-backing-services-api image.
-`imagePullPolicy` | `"Always"` | Pull policy for the quay.io/codaisseur/deis-backing-services-api image.
-`secretKeyBase` | `""` | **Create a secret by running: `docker run --rm quay.io/codaisseur/deis-backing-services-api rails secret`**
+`imageTag` | `v0.1.0` | Tag for the quay.io/codaisseur/alea-controller image.
+`imagePullPolicy` | `"Always"` | Pull policy for the quay.io/codaisseur/alea-controller image.
+`secretKeyBase` | `""` | **Create a secret by running: `docker run --rm quay.io/codaisseur/alea-controller rails secret`**
 
-## SSL for the API Ingress
+## Setting up SSL for the Controller Ingress
+
+The Alea Controller Ingress needs an SSL certificate. To set this up, create a yaml file, `controler-ssl.yaml`, and put in the following:
+
+```yaml
+# controler-ssl.yaml
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: controller-ssl-cert
+  namespace: services
+type: Opaque
+data:
+  tls.crt: LS0tLS1CR...
+  tls.key: LS0tLS1CR...
+```
+
+Put in your crt and key bas64 encoded:
 
 ```bash
 $ cat certificate-file.crt
@@ -113,225 +131,12 @@ $ cat certificate.key | base64 -e
 LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQovKiB5b3VyIHVuZW5jcnlwdGVkIHByaXZhdGUga2V5IGhlcmUgKi8KLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K
 ```
 
-## Install a Redis cluster with Helm
+Then create the Secret:
 
-We'll use [Helm](http://helm.sh/) to set up a HA Redis cluster for us.
-Refer to the Helm docs for install instructions.
-
-```
-helmc install redis-cluster
+```bash
+kubectl create -f controller-ssl.yaml
 ```
 
-## Set up the Postgres service cluster and MongoDB data disk
-
-Check out the [instructions](/kubernetes) to set up the services cluster on Kubernetes to get you started.
-
-## Install MongoDB
-
-```
-helmc repo add bitnami https://github.com/bitnami/charts
-helmc fetch bitnami/mongodb
-helmc edit mongodb
-```
-
-Update `tpl/values.toml` to match your needs.
-
-Then run the generators:
-
-```
-helmc generate --force mongodb
-```
-
-And install:
-
-```
-helmc install mongodb
-```
-
-## Installing Memcached
-
-Fetch the `memcached` chart with `helmc`
-
-```
-helmc fetch memcached
-```
-
-Then make it a little easier to use by adding 2 services
-
-```
-helmc edit memcached
-```
-
-```yaml
-# manifests/memcached-rc.yaml
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: memcached-1
-spec:
-  ports:
-  - name: memcached-port-1
-    port: 11211
-    protocol: TCP
-    targetPort: 11211
-  selector:
-    app: memcached-1
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: memcached-2
-spec:
-  ports:
-  - name: memcached-port-2
-    port: 11211
-    protocol: TCP
-    targetPort: 11211
-  selector:
-    app: memcached-2
-
----
-
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: memcached-1
-  labels:
-    app: memcached-1
-    heritage: helm
-spec:
-  replicas: 1
-  selector:
-    name: memcached-1
-    mode: cluster
-    provider: memcached
-  template:
-    metadata:
-      labels:
-        name: memcached-1
-        mode: cluster
-        provider: memcached
-    spec:
-      containers:
-      - name: memcached
-        image: "memcached:1.4.24"
-        ports:
-        - containerPort: 11211
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: memcached-2
-  labels:
-    heritage: helm
-    app: memcached-2
-spec:
-  replicas: 1
-  selector:
-    name: memcached-2
-    mode: cluster
-    provider: memcached
-  template:
-    metadata:
-      labels:
-        name: memcached-2
-        mode: cluster
-        provider: memcached
-    spec:
-      containers:
-      - name: memcached
-        image: "memcached:1.4.24"
-        ports:
-        - containerPort: 11211
-```
-
-Then install it
-
-```
-helmc install memcached
-```
-
----
-apiVersion: v1
-
-## Setting up the Manager App
-
-### Create a Deis app
-
-Clone this repository and set up a deis app:
-
-```
-deis create
-```
-
-### Get the proxy service ip
-
-```
-kubectl get svc
-
-NAME                   CLUSTER-IP       EXTERNAL-IP   PORT(S)
-memcached-1            10.115.249.176   <none>        11211/TCP
-memcached-2            10.115.244.86    <none>        11211/TCP
-mongodb                10.115.240.18    <none>        27017/TCP
-redis-sentinel         10.115.253.131   <none>        26379/TCP
-stolon-proxy-service   10.115.246.38    <none>        5432/TCP
-```
-
-### Deploy the Backing Services Manager App
-
-The app runs from a Docker container, and you will need to set a
-`SECRET_KEY_BASE`:
-
-```
-deis config:set SECRET_KEY_BASE=$(rails secret)
-```
-
-Use the IP to create the `DATABASE_URL`, we will use the one mentioned in the above output:
-
-```
-deis config:set DATABASE_URL=postgresql://stolon:password@10.115.246.38:5432/backing_services
-```
-
-And same for `REDIS_URL`:
-
-```
-deis config:set REDIS_URL=redis://10.115.253.131:26379/redis_services
-```
-
-Then the 2 `MEMCACHED_SERVERS` separated by commas:
-
-```
-deis config:set MEMCACHED_SERVERS=10.115.249.176,10.115.244.86
-```
-
-And finally `MONGODB_URL`:
-
-```
-deis config:set MONGODB_URL=mongodb://root:rootPassword@10.115.240.18:27017/admin
-```
-
-Use the root user and root password from the `values.toml` file that you edited with `helmc`.
-
-Then deploy the Rails app:
-
-```
-git push deis master
-```
-
-And run the rake task to create the `backing_services` database for this app:
-
-```
-deis run rake deis:create_database
-```
-
-Then migrate the database:
-
-```
-deis run rake db:migrate
-```
 
 ## Get a Postgres database for new Apps
 
