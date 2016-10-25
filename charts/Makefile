@@ -25,9 +25,5 @@ run:
 	kubectl run api --image=quay.io/codaisseur/alea-controller -i --tty -n services /bin/bash
 
 release: build
-	git fetch
-	git checkout gh-pages
-	#git pull origin gh-pages
-	mkdir -p ../releases
-	mv alea-*.tgz ../releases/
-	helm repo index releases --url https://alea.github.io/repo
+	# ./release
+	helm repo index . --url https://storage.googleapis.com/alea-charts
