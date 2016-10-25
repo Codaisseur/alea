@@ -4,9 +4,6 @@ lint:
 build: lint
 	helm package alea
 
-configure:
-	./configure.sh
-
 install: build
 	helm install --namespace services --name alea --values=settings.yaml alea
 	if [ -f controller-ssl.yaml ]; then kubectl create -f controller-ssl.yaml; fi
@@ -25,5 +22,4 @@ run:
 	kubectl run api --image=quay.io/codaisseur/alea-controller -i --tty -n services /bin/bash
 
 release: build
-	# ./release
 	helm repo index . --url https://storage.googleapis.com/alea-charts

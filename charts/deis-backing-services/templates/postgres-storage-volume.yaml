@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "{{ .Values.postgres.diskNamePrefix }}-1"
+  labels:
+    heritage: deis-backing-services
+    name: "{{ .Values.postgres.diskNamePrefix }}-1"
+spec:
+  capacity:
+    storage: {{ .Values.postgres.diskSize }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: "{{ .Values.postgres.diskNamePrefix }}-1"
+    fsType: "ext4"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "{{ .Values.postgres.diskNamePrefix }}-2"
+  labels:
+    heritage: deis-backing-services
+    name: "{{ .Values.postgres.diskNamePrefix }}-2"
+spec:
+  capacity:
+    storage: {{ .Values.postgres.diskSize }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: "{{ .Values.postgres.diskNamePrefix }}-2"
+    fsType: "ext4"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "{{ .Values.postgres.diskNamePrefix }}-3"
+  labels:
+    heritage: deis-backing-services
+    name: "{{ .Values.postgres.diskNamePrefix }}-3"
+spec:
+  capacity:
+    storage: {{ .Values.postgres.diskSize }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: "{{ .Values.postgres.diskNamePrefix }}-3"
+    fsType: "ext4"

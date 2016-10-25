@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mongodb-apps
+  labels:
+    app: mongodb-apps
+    heritage: deis-backing-services
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongodb-apps
+        heritage: deis-backing-services
+    spec:
+      containers:
+      - name: mongodb-apps
+        image: "bitnami/mongodb:{{ default "" .Values.mongo.imageTag }}"
+        imagePullPolicy: {{ default "Always" .Values.mongo.imagePullPolicy }}
+        env:
+        - name: MONGODB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-apps
+              key: mongodb-root-password
+        - name: MONGODB_USERNAME
+          value: {{ default "" .Values.mongo.dbUsername | quote }}
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-apps
+              key: mongodb-password
+        - name: MONGODB_DATABASE
+          value: {{ default "" .Values.mongo.dbDatabase | quote }}
+        ports:
+        - name: mongodb
+          containerPort: 27017
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /bitnami/mongodbt
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: "{{ .Values.mongo.diskName }}-claim"

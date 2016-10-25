@@ -1,0 +1,8 @@
+mongo:
+  dbRootPassword: "93VFvdHscCHsqQ69NW4f6W2A9ua9bV3w"
+  dbUser: "codaisseur"
+  dbPassword: "vmu96dorMF4g3Yb7kN62ZB8czg4v2Wwm"
+  dbDatabase: "coderunner"
+
+api:
+  secretKeyBase: "4e613db4d4576e8d736faf483a90039ed2b7c69842209006fddde8724ff1531adaededbd2bd56d83cd12ab7f9cc20b743c703d1b399457538c3126008ccccbef"
