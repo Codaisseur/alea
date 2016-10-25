@@ -1,0 +1,66 @@
+# Default values for alea.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+
+region: europe-west1-b
+
+## Persistent Storage Configuration
+#
+#  The chart creates 2 persistent storage types: for standard (slower) disks,
+#  and SSD (faster) disks.
+#
+#   See: https://github.com/kubernetes/kubernetes/blob/release-1.4/examples/experimental/persistent-volume-provisioning/README.md
+#
+#    - standardClassName: Name for the standard storage class
+#    - ssdClassName: Name for the ssd storage class
+#    - provisioner: Provisioner to use:
+#        - GCE: kubernetes.io/gce-pd
+#        - AWS: kubernetes.io/aws-ebs
+#    - standardType: Disk type to use for standard storage class
+#    - ssdType: Disk type to use for fast storage class
+#    - zone: AZ to use for storage
+#    - iopsPerGB: iops string value for AWS type storage
+#
+storage:
+  standardClassName: slow
+  ssdClassName: fast
+  provisioner: kubernetes.io/gce-pd
+  standardType: pd-standard
+  ssdType: pd-ssd
+  zone: europe-west1-b
+  iopsPerGB: "10" # for AWS
+
+mongo:
+  diskName: mongodb-data-disk
+  storageClassName: fast
+  diskSize: 500Gi
+  imageTag: 3.2.9-r2
+  imagePullPolicy: IfNotPresent
+  dbRootPassword: "root"
+  dbUsername: "api"
+  dbPassword: "mypass"
+  dbDatabase: "alea-controller"
+
+postgres:
+  imageTag: latest
+  imagePullPolicy: IfNotPresent
+  diskName: pg-data-disk
+  storageClassName: fast
+  diskSize: 200Gi
+  username: postgres
+  password: password
+  database: backing_services
+
+redis:
+  diskName: redis-data-disk
+  storageClassName: slow
+  diskSize: 200Gi
+
+controller:
+  imageTag: v0.1.0 # latest
+  imagePullPolicy: "Always" # "IfNotPresent"
+  # Create a secret by running:
+  # docker run --rm quay.io/codaisseur/alea-controller rails secret
+  # then put it in your custom.yaml.
+  secretKeyBase: ""

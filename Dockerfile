@@ -12,9 +12,12 @@ RUN echo 'http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories &
   apk add --no-cache mongodb
 
 RUN apk --update add --virtual build-dependencies build-base ruby-dev openssl-dev \
-  libxml2-dev libxslt-dev postgresql-dev postgresql-client libc-dev linux-headers \
+  libxml2-dev libxslt-dev libc-dev linux-headers curl \
   nodejs tzdata bash && \
   rm -rf /var/cache/apk/*
+
+RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+  apk update && apk add "postgresql-dev@edge<9.6" "postgresql-client@edge<9.6"
 
 ADD Gemfile /app/
 ADD Gemfile.lock /app/
@@ -35,4 +38,4 @@ ENV RAILS_SERVE_STATIC_FILES true
 
 WORKDIR /app
 
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD ["./run.sh"]

@@ -1,254 +1,172 @@
-# Deis Backing Services Manager
+# Alea - Deis Backing Services Manager
 
-[![](https://quay.io/repository/codaisseur/deis-backing-services-api/status)]https://quay.io/repository/codaisseur/deis-backing-services-api)
+[![](https://quay.io/repository/codaisseur/alea-controller/status)](https://quay.io/repository/codaisseur/alea-controller)
 
-At [Codaisseur](https://www.codaisseur.com) we wanted to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
+At [Codaisseur](https://www.codaisseur.com) we want to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
 
 [![](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)
 
 ## Anyway..
 
-We use Rails a lot, and PostgreSQL, so we needed an easy way for students to set up their apps despite the fact that Deis does not provide a PostgreSQL service for
-them like Heroku does. This manager app takes care of that.
+We use Rails a lot, and PostgreSQL, so we needed an easy way for students to set up their apps despite the fact that Deis does not provide a PostgreSQL service for them like Heroku does. This manager app takes care of that.
+
+It also has a few other of our favorite services:
+
+  - Redis
+  - MongoDB
+  - Memcached
 
 ## Prerequisites
 
   - A working Deis workflow cluster on k8s
-  - Helm classic installed and set up
+  - [Helm][helm] installed and set up
   - Deis client installed and set up
 
-## Install a Redis cluster with Helm
+## Step-by-Step Guide
 
-We'll use [Helm](http://helm.sh/) to set up a HA Redis cluster for us.
-Refer to the Helm docs for install instructions.
+  - Create a file called `settings.yaml` and set variables you would like to
+    change. See **Supported Values** section below.
+  - Generate a `SECRET_KEY_BASE` token for the Rails Services API: `docker run --rm quay.io/codaisseur/alea-controller rails secret` and put it in your
+    `settings.yaml`:
+  - Set up SSL for the Controller Ingress (see below)
+  - Add the Alea Helm repo: `helm repo add alea https://storage.googleapis.com/alea-charts`
+  - Install Alea in the `services` namespace, using your `settings.yaml`: `helm install alea --namespace=services --name alea --values=settings.yaml`
+  - Wait for the stack to be provisioned, then get the IP for the controller ingress: `kubectl -n services get ing`. Create an A-record for you DNS to point to whatever you set for the `controller.domain` setting to be.
+  - Check out the **Usage section** below to start using the services in your Deis apps!
 
-```
-helmc install redis-cluster
-```
+## Supported Values
 
-## Set up the Postgres service cluster and MongoDB data disk
+### Storage (`storage`)
 
-Check out the [instructions](/kubernetes) to set up the services cluster on Kubernetes to get you started.
+Key | Default Value | Description
+--- | ------------- | -----------
+`standardClassName` | `slow` | Storage class name for standard class persistent storage used by Redis by default.
+`ssdClassName` | `fast` | Storage class name for SSD class persistent storage (fast) used by PostgreSQL and MongoDB by default.
+`provisioner` | `kubernetes.io/gce-pd` | Storage class provisioner.
+`standardType` | `pd-standard` | Standard class persistent storage type.
+`ssdType` | `pd-ssd` | SSD class persistent storage type.
+`zone` | `europe-west1-b` | Default availability zone in which the services will be deployed. **This should match your container cluster's zone, and it should be the same as where Deis runs.**
 
-## Install MongoDB
+### MongoDB (`mongo`)
 
-```
-helmc repo add bitnami https://github.com/bitnami/charts
-helmc fetch bitnami/mongodb
-helmc edit mongodb
-```
+Key | Default Value | Description
+--- | ------------- | -----------
+`diskName` | `mongodb-data-disk` | Name of the mongodb data disk (should be unique per cluster, thus configurable).
+`storageClassName` | `fast` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
+`diskSize` | `500Gi` | Disk size for the mongodb disk.
+`imageTag` | `3.2.9-r2` | Image tag to use for the bitnami/mongodb docker image.
+`imagePullPolicy` | `IfNotPresent` | Image pull policy for the bitnami/docker image.
+`dbRootPassword` | `"root"` | Password for the mongodb `root` user.
+`dbUsername` | `"api"` | Mongodb username for the app user.
+`dbPassword` | `"mypass"` | Mongodb password for the app user.
+`dbDatabase` | `"backing-services-api"` | Name of the database to use for the app.
 
-Update `tpl/values.toml` to match your needs.
+### PostgreSQL (`postgres`)
 
-Then run the generators:
+Key | Default Value | Description
+--- | ------------- | -----------
+`imageTag` | `latest` | Image tag for the paunin/postgresql-cluster-pgpool and paunin/postgresql-cluster-pgsql images.
+`imagePullPolicy` | `IfNotPresent` | Pull policy for above images.
+`diskName` | `pg-data-disk` | Name of postgres primary's data disk (should be unique per cluster, thus configurable).
+`storageClassName` | `fast` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
+`diskSize` | `200Gi` | Disk size for postgres primary's disk.
+`username` | `postgres` | Username for the postgres (root) user.
+`password` | `password` | Password for the postgres (root) user.
+`database` | `backing_services` | Name of the API's database. The API uses this database to store the services it gave out to users of your cluster.
 
-```
-helmc generate --force mongodb
-```
+### Redis (`redis`)
 
-And install:
+Key | Default Value | Description
+--- | ------------- | -----------
+`diskName` | `redis-data-disk` | Name of the redis data disk (should be unique per cluster, thus configurable).
+`storageClassName` | `slow` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
+`diskSize` | `200Gi` | Disk size of the Redis persistent disk.
 
-```
-helmc install mongodb
-```
+### API (`controller`)
 
-## Installing Memcached
+Key | Default Value | Description
+--- | ------------- | -----------
+`imageTag` | `v0.1.0` | Tag for the quay.io/codaisseur/alea-controller image.
+`imagePullPolicy` | `"Always"` | Pull policy for the quay.io/codaisseur/alea-controller image.
+`secretKeyBase` | `""` | **Create a secret by running: `docker run --rm quay.io/codaisseur/alea-controller rails secret`**
+`hostname` | `"alea.example.com"` | **Set this to the hostname that you want to use for the controller.** Note that you should have an SSL certificate for this domain as well for now.
 
-Fetch the `memcached` chart with `helmc`
-
-```
-helmc fetch memcached
-```
-
-Then make it a little easier to use by adding 2 services
-
-```
-helmc edit memcached
-```
+### Example Settings File
 
 ```yaml
-# manifests/memcached-rc.yaml
+# settings.yaml
+
+mongo:
+  dbRootPassword: "verysecret"
+  dbUser: "myuser"
+  dbPassword: "verysecret2"
+
+postgres:
+  password: "supersecret"
+
+controller:
+  secretKeyBase: "4e613db..."
+  hostname: services.mydomain.com
+```
+
+## Setting up SSL for the Controller Ingress
+
+The Alea Controller Ingress needs an SSL certificate. To set this up, create a yaml file, `controler-ssl.yaml`, and put in the following:
+
+```yaml
+# controler-ssl.yaml
 
 apiVersion: v1
-kind: Service
+kind: Secret
 metadata:
-  name: memcached-1
-spec:
-  ports:
-  - name: memcached-port-1
-    port: 11211
-    protocol: TCP
-    targetPort: 11211
-  selector:
-    app: memcached-1
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: memcached-2
-spec:
-  ports:
-  - name: memcached-port-2
-    port: 11211
-    protocol: TCP
-    targetPort: 11211
-  selector:
-    app: memcached-2
-
----
-
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: memcached-1
-  labels:
-    app: memcached-1
-    heritage: helm
-spec:
-  replicas: 1
-  selector:
-    name: memcached-1
-    mode: cluster
-    provider: memcached
-  template:
-    metadata:
-      labels:
-        name: memcached-1
-        mode: cluster
-        provider: memcached
-    spec:
-      containers:
-      - name: memcached
-        image: "memcached:1.4.24"
-        ports:
-        - containerPort: 11211
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: memcached-2
-  labels:
-    heritage: helm
-    app: memcached-2
-spec:
-  replicas: 1
-  selector:
-    name: memcached-2
-    mode: cluster
-    provider: memcached
-  template:
-    metadata:
-      labels:
-        name: memcached-2
-        mode: cluster
-        provider: memcached
-    spec:
-      containers:
-      - name: memcached
-        image: "memcached:1.4.24"
-        ports:
-        - containerPort: 11211
+  name: controller-ssl-cert
+  namespace: services
+type: Opaque
+data:
+  tls.crt: LS0tLS1CR...
+  tls.key: LS0tLS1CR...
 ```
 
-Then install it
+Put in your crt and key bas64 encoded:
 
-```
-helmc install memcached
-```
-
----
-apiVersion: v1
-
-## Setting up the Manager App
-
-### Create a Deis app
-
-Clone this repository and set up a deis app:
-
-```
-deis create
-```
-
-### Get the proxy service ip
-
-```
-kubectl get svc
-
-NAME                   CLUSTER-IP       EXTERNAL-IP   PORT(S)
-memcached-1            10.115.249.176   <none>        11211/TCP
-memcached-2            10.115.244.86    <none>        11211/TCP
-mongodb                10.115.240.18    <none>        27017/TCP
-redis-sentinel         10.115.253.131   <none>        26379/TCP
-stolon-proxy-service   10.115.246.38    <none>        5432/TCP
+```bash
+$ cat certificate-file.crt
+-----BEGIN CERTIFICATE-----
+/ * your SSL certificate here */
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+/* any intermediate certificates */
+-----END CERTIFICATE-----
+$ cat certificate-file.crt | base64 -e
+LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCi8gKiB5b3VyIFNTTCBjZXJ0aWZpY2F0ZSBoZXJlICovCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0KLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCi8qIGFueSBpbnRlcm1lZGlhdGUgY2VydGlmaWNhdGVzICovCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+$ cat certificate.key
+-----BEGIN RSA PRIVATE KEY-----
+/* your unencrypted private key here */
+-----END RSA PRIVATE KEY-----
+$ cat certificate.key | base64 -e
+LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQovKiB5b3VyIHVuZW5jcnlwdGVkIHByaXZhdGUga2V5IGhlcmUgKi8KLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K
 ```
 
-### Deploy the Backing Services Manager App
+Then create the Secret:
 
-The app runs from a Docker container, and you will need to set a
-`SECRET_KEY_BASE`:
-
-```
-deis config:set SECRET_KEY_BASE=$(rails secret)
+```bash
+kubectl create -f controller-ssl.yaml
 ```
 
-Use the IP to create the `DATABASE_URL`, we will use the one mentioned in the above output:
+## Usage
 
-```
-deis config:set DATABASE_URL=postgresql://stolon:password@10.115.246.38:5432/backing_services
-```
-
-And same for `REDIS_URL`:
-
-```
-deis config:set REDIS_URL=redis://10.115.253.131:26379/redis_services
-```
-
-Then the 2 `MEMCACHED_SERVERS` separated by commas:
-
-```
-deis config:set MEMCACHED_SERVERS=10.115.249.176,10.115.244.86
-```
-
-And finally `MONGODB_URL`:
-
-```
-deis config:set MONGODB_URL=mongodb://root:rootPassword@10.115.240.18:27017/admin
-```
-
-Use the root user and root password from the `values.toml` file that you edited with `helmc`.
-
-Then deploy the Rails app:
-
-```
-git push deis master
-```
-
-And run the rake task to create the `backing_services` database for this app:
-
-```
-deis run rake deis:create_database
-```
-
-Then migrate the database:
-
-```
-deis run rake db:migrate
-```
-
-## Get a Postgres database for new Apps
+### Get a Postgres database for new Apps
 
 When you are setting up a new app that needs to use PostgreSQL, you can create a database by `POST`ing to the Manager app's Postgres endpoint:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/postgres_databases
+curl -XPOST https://services.yourdomain.com/postgres_databases
 ```
 
 This will return your new `DATABASE_URL`:
 
 ```
-DATABASE_URL=postgres://meagan:itXA7CiKj33R7T4cS8s4@10.xxx.xxx.xx:5432/compress_program
+DATABASE_URL=postgres://kaya:UQjSz3Z-4jKxfMaMcrRr@postgres-pooling-service.services:5432/navigate_alarm
 ```
 
 ## Get a Redis db for new Apps
@@ -256,13 +174,13 @@ DATABASE_URL=postgres://meagan:itXA7CiKj33R7T4cS8s4@10.xxx.xxx.xx:5432/compress_
 Similarly, we can get a REDIS_URL for new apps:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/redis_services
+curl -XPOST https://services.yourdomain.com/redis_services
 ```
 
 Which will return something like:
 
 ```
-REDIS_URL=redis://10.xxx.xxx.xx:26379/copy_port
+REDIS_URL=redis://redis-sentinel.services:26379/index_bus
 ```
 
 ## Get a Mongo db for new Apps
@@ -270,13 +188,13 @@ REDIS_URL=redis://10.xxx.xxx.xx:26379/copy_port
 And unsurprisingly this works the same for MongoDB:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/mongodb_services
+curl -XPOST https://services.yourdomain.com/mongodb_services
 ```
 
 Which will return something like:
 
 ```
-MONGODB_URL=mongodb://10.xxx.xxx.xx:27017/persistence_much
+MONGODB_URL=mongodb://mandymcdermott:bjDsasmjoCb-kHZBGrwZ@mongodb-service.services:27017/bypass_interface
 ```
 
 ## Get a Memcached namespace for new Apps
@@ -284,14 +202,18 @@ MONGODB_URL=mongodb://10.xxx.xxx.xx:27017/persistence_much
 Memcached is configured with servers and a namespace:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/memcached_services
+curl -XPOST https://services.yourdomain.com/memcached_services
 ```
 
 Which will return something like:
 
 ```
-MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
+MEMCACHED_SERVERS=memcached-1.services,memcached-2.services MEMCACHED_NAMESPACE=copy_driver
 ```
+
+## Production Readiness
+
+This stack is not production ready yet. We are actively using this with our students at [Codaisseur][codaisseur], who create 100s of apps every week or so, but this needs a lot more testing to be safe. Our plan is to add automated backup services for each service in the near future. See also the roadmap below, and let us know in the issues if there's anything you'd like to see or if you experience any trouble.
 
 ## Roadmap
 
@@ -300,8 +222,8 @@ MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
     - √ ~~Redis~~
     - √ ~~MongoDB~~
     - √ ~~Memcached~~
-  - Create a Helm chart for Stolon.
-  - Create Helm charts for the entire cluster
+  - √ ~~Create Helm charts for the entire cluster~~
+  - Create automated backup services for each service
 
 Let us know which services you are missing and we will try to add them.
 
@@ -312,9 +234,13 @@ Feel free to help us out or leave any feedback in the issues :)
   - **2016-07-26** Initial project with PostgreSQL service
   - **2016-07-31** Added Redis, MongoDB, and Memcached services
   - **2016-08-08** Fixed MongoDB issues, running from Dockerfile now
+  - **2016-10-24** Moved away from Stolon and to a setup by @paunin with pgpool2
+  - **2016-10-24** Moved away from Helm Classic and to the new Helm
 
 ## Thanks to
 
   - The [Deis](https://deis.com/) Team for the awesomeness that is our own PaaS!
-  - The Bitnami team for their awesome list of [helmc charts](https://github.com/bitnami/charts)
-  - The Storint.lab team for their super duper HA Postgres solution [Stolon](https://github.com/sorintlab/stolon)
+  - The Bitnami team for their awesome list of [helm charts](https://github.com/bitnami/charts)
+  - @paunin for his [postgresql cluster setup](https://github.com/paunin/postgres-docker-cluster)
+
+[helm]: https://github.com/kubernetes/helm

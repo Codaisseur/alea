@@ -17,3 +17,7 @@
 .byebug_history
 kubernetes/bin/deisconfig
 .deisconfig
+charts/alea-*.tgz
+charts/dev.yaml
+charts/controller-ssl.yaml
+charts/settings.yaml

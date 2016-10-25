@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: postgres-pooling
+  labels:
+    app: postgres
+    heritage: alea
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+        node: pgpool
+        heritage: alea
+    spec:
+      containers:
+      - name: postgres-pooling
+        image: "paunin/postgresql-cluster-pgpool:{{ default "" .Values.postgres.imageTag }}"
+        imagePullPolicy: {{ default "Always" .Values.postgres.imagePullPolicy }}
+        env:
+        - name: "PCP_USER"
+          value: "pcp_user"
+        - name: "PCP_PASSWORD"
+          value: "pcp_pass"
+        - name: "REPLICATION_USER"
+          value: "replication_user"
+        - name: "REPLICATION_PASSWORD"
+          value: "replication_pass"
+        - name: "POSTGRES_PASSWORD"
+          value: {{ .Values.postgres.password | quote }}
+        - name: "DB_USERS"
+          value: "{{ .Values.postgres.username }}:{{ .Values.postgres.password }}"
+        - name: "BACKENDS"
+          value: "0:postgres-primary-service:5432:1:/var/lib/postgresql/data/subdir:ALLOW_TO_FAILOVER,1:postgres-secondary-1-service::::,2:postgres-secondary-2-service::::"
+        ports:
+        - name: pgpool
+          containerPort: 5432
