@@ -1,6 +1,6 @@
 # Alea - Deis Backing Services Manager
 
-[![](https://quay.io/repository/codaisseur/alea-controller/status)]https://quay.io/repository/codaisseur/alea-controller)
+[![](https://quay.io/repository/codaisseur/alea-controller/status)](https://quay.io/repository/codaisseur/alea-controller)
 
 At [Codaisseur](https://www.codaisseur.com) we want to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
 
@@ -29,13 +29,10 @@ It also has a few other of our favorite services:
   - Generate a `SECRET_KEY_BASE` token for the Rails Services API: `docker run --rm quay.io/codaisseur/alea-controller rails secret` and put it in your
     `settings.yaml`:
   - Set up SSL for the Controller Ingress (see below)
-
-```yaml
-# settings.yaml
-
-api:
-  secretKeyBase: "ae20e..."
-```
+  - Add the Alea Helm repo: `helm repo add alea https://storage.googleapis.com/alea-charts`
+  - Install Alea in the `services` namespace, using your `settings.yaml`: `helm install alea --namespace=services --name alea --values=settings.yaml`
+  - Wait for the stack to be provisioned, then get the IP for the controller ingress: `kubectl -n services get ing`. Create an A-record for you DNS to point to whatever you set for the `controller.domain` setting to be.
+  - Check out the **Usage section** below to start using the services in your Deis apps!
 
 ## Supported Values
 
@@ -92,6 +89,25 @@ Key | Default Value | Description
 `imageTag` | `v0.1.0` | Tag for the quay.io/codaisseur/alea-controller image.
 `imagePullPolicy` | `"Always"` | Pull policy for the quay.io/codaisseur/alea-controller image.
 `secretKeyBase` | `""` | **Create a secret by running: `docker run --rm quay.io/codaisseur/alea-controller rails secret`**
+`hostname` | `"alea.example.com"` | **Set this to the hostname that you want to use for the controller.** Note that you should have an SSL certificate for this domain as well for now.
+
+### Example Settings File
+
+```yaml
+# settings.yaml
+
+mongo:
+  dbRootPassword: "verysecret"
+  dbUser: "myuser"
+  dbPassword: "verysecret2"
+
+postgres:
+  password: "supersecret"
+
+controller:
+  secretKeyBase: "4e613db..."
+  hostname: services.mydomain.com
+```
 
 ## Setting up SSL for the Controller Ingress
 
@@ -137,19 +153,20 @@ Then create the Secret:
 kubectl create -f controller-ssl.yaml
 ```
 
+## Usage
 
-## Get a Postgres database for new Apps
+### Get a Postgres database for new Apps
 
 When you are setting up a new app that needs to use PostgreSQL, you can create a database by `POST`ing to the Manager app's Postgres endpoint:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/postgres_databases
+curl -XPOST https://services.yourdomain.com/postgres_databases
 ```
 
 This will return your new `DATABASE_URL`:
 
 ```
-DATABASE_URL=postgres://meagan:itXA7CiKj33R7T4cS8s4@10.xxx.xxx.xx:5432/compress_program
+DATABASE_URL=postgres://kaya:UQjSz3Z-4jKxfMaMcrRr@postgres-pooling-service.services:5432/navigate_alarm
 ```
 
 ## Get a Redis db for new Apps
@@ -157,13 +174,13 @@ DATABASE_URL=postgres://meagan:itXA7CiKj33R7T4cS8s4@10.xxx.xxx.xx:5432/compress_
 Similarly, we can get a REDIS_URL for new apps:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/redis_services
+curl -XPOST https://services.yourdomain.com/redis_services
 ```
 
 Which will return something like:
 
 ```
-REDIS_URL=redis://10.xxx.xxx.xx:26379/copy_port
+REDIS_URL=redis://redis-sentinel.services:26379/index_bus
 ```
 
 ## Get a Mongo db for new Apps
@@ -171,13 +188,13 @@ REDIS_URL=redis://10.xxx.xxx.xx:26379/copy_port
 And unsurprisingly this works the same for MongoDB:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/mongodb_services
+curl -XPOST https://services.yourdomain.com/mongodb_services
 ```
 
 Which will return something like:
 
 ```
-MONGODB_URL=mongodb://10.xxx.xxx.xx:27017/persistence_much
+MONGODB_URL=mongodb://mandymcdermott:bjDsasmjoCb-kHZBGrwZ@mongodb-service.services:27017/bypass_interface
 ```
 
 ## Get a Memcached namespace for new Apps
@@ -185,14 +202,18 @@ MONGODB_URL=mongodb://10.xxx.xxx.xx:27017/persistence_much
 Memcached is configured with servers and a namespace:
 
 ```
-curl -XPOST http://watery-fowls.xxx.xxx.xx.xxx.nip.io/memcached_services
+curl -XPOST https://services.yourdomain.com/memcached_services
 ```
 
 Which will return something like:
 
 ```
-MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
+MEMCACHED_SERVERS=memcached-1.services,memcached-2.services MEMCACHED_NAMESPACE=copy_driver
 ```
+
+## Production Readiness
+
+This stack is not production ready yet. We are actively using this with our students at [Codaisseur][codaisseur], who create 100s of apps every week or so, but this needs a lot more testing to be safe. Our plan is to add automated backup services for each service in the near future. See also the roadmap below, and let us know in the issues if there's anything you'd like to see or if you experience any trouble.
 
 ## Roadmap
 
@@ -202,6 +223,7 @@ MEMCACHED_SERVERS=10.115.244.86,10.115.249.176 MEMCACHED_NAMESPACE=navigate_card
     - √ ~~MongoDB~~
     - √ ~~Memcached~~
   - √ ~~Create Helm charts for the entire cluster~~
+  - Create automated backup services for each service
 
 Let us know which services you are missing and we will try to add them.
 
