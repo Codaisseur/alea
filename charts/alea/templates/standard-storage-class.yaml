@@ -3,7 +3,7 @@ apiVersion: storage.k8s.io/v1beta1
 metadata:
   name: {{ .Values.storage.standardClassName }}
   labels:
-    heritage: deis-backing-services
+    heritage: alea
 provisioner: {{ .Values.storage.provisioner }}
 parameters:
   type: {{ .Values.storage.standardType }}

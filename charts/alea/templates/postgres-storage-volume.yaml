@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: "{{ .Values.postgres.diskName }}"
   labels:
-    heritage: deis-backing-services
+    heritage: alea
     name: "{{ .Values.postgres.diskName }}"
 spec:
   capacity:

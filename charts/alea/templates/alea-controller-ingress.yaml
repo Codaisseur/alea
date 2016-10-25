@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: alea-controller-ingress
+  labels:
+    app: alea-controller
+    heritage: alea
+spec:
+  tls:
+  - host: {{ default "services.example.com" .Values.controller.hostname | quote }}
+    secretName: api-ssl-cert
+  backend:
+    serviceName: alea-controller-service
+    servicePort: 80

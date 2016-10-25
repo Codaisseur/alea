@@ -4,7 +4,7 @@ metadata:
   name: postgres-secondary-1
   labels:
     app: postgres
-    heritage: deis-backing-services
+    heritage: alea
 spec:
   replicas: 1
   template:
@@ -12,7 +12,7 @@ spec:
       labels:
         app: postgres
         node: secondary-1
-        heritage: deis-backing-services
+        heritage: alea
     spec:
       containers:
       - name: postgres-secondary-1

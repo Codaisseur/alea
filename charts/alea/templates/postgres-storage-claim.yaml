@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: "{{ .Values.postgres.diskName }}-claim"
   labels:
-    heritage: deis-backing-services
+    heritage: alea
   annotations:
     volume.beta.kubernetes.io/storage-class: "{{ .Values.postgres.storageClassName }}"
 spec:

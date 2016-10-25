@@ -4,7 +4,7 @@ metadata:
   name: postgres-pooling
   labels:
     app: postgres
-    heritage: deis-backing-services
+    heritage: alea
 spec:
   replicas: 1
   template:
@@ -12,7 +12,7 @@ spec:
       labels:
         app: postgres
         node: pgpool
-        heritage: deis-backing-services
+        heritage: alea
     spec:
       containers:
       - name: postgres-pooling

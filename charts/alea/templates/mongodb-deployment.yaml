@@ -4,14 +4,14 @@ metadata:
   name: mongodb-apps
   labels:
     app: mongodb-apps
-    heritage: deis-backing-services
+    heritage: alea
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: mongodb-apps
-        heritage: deis-backing-services
+        heritage: alea
     spec:
       containers:
       - name: mongodb-apps

@@ -1,4 +1,4 @@
-# Default values for deis-backing-services.
+# Default values for alea.
 # This is a YAML-formatted file.
 # Declare name/value pairs to be passed into your templates.
 # name: value
@@ -40,7 +40,7 @@ mongo:
   dbRootPassword: "root"
   dbUsername: "api"
   dbPassword: "mypass"
-  dbDatabase: "backing-services-api"
+  dbDatabase: "alea-controller"
 
 postgres:
   imageTag: latest
@@ -57,10 +57,10 @@ redis:
   storageClassName: slow
   diskSize: 200Gi
 
-api:
+controller:
   imageTag: v0.1.0 # latest
   imagePullPolicy: "Always" # "IfNotPresent"
   # Create a secret by running:
-  # docker run --rm quay.io/codaisseur/deis-backing-services-api rails secret
+  # docker run --rm quay.io/codaisseur/alea-controller rails secret
   # then put it in your custom.yaml.
   secretKeyBase: ""

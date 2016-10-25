@@ -1,9 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: backing-services-api
+  name: alea-controller
   labels:
-    heritage: deis-backing-services
+    heritage: alea
 spec:
   replicas: 1
   strategy:
@@ -13,15 +13,15 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: backing-services-api
+      app: alea-controller
   template:
     metadata:
       labels:
-        app: backing-services-api
+        app: alea-controller
     spec:
       containers:
-        - name: backing-services-api
-          image: "quay.io/codaisseur/deis-backing-services-api:{{ .Values.api.imageTag }}"
+        - name: alea-controller
+          image: "quay.io/codaisseur/alea-controller:{{ .Values.controller.imageTag }}"
           imagePullPolicy: "Always"
           ports:
             - containerPort: 5000
@@ -44,7 +44,7 @@ spec:
             - name: "SECRET_KEY_BASE"
               valueFrom:
                 secretKeyRef:
-                  name: api
+                  name: alea-controller
                   key: secretKeyBase
           livenessProbe:
             httpGet:
