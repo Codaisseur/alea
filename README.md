@@ -30,7 +30,7 @@ It also has a few other of our favorite services:
     `settings.yaml`:
   - Set up SSL for the Controller Ingress (see below)
   - Add the Alea Helm repo: `helm repo add alea https://storage.googleapis.com/alea-charts`
-  - Install Alea in the `services` namespace, using your `settings.yaml`: `helm install alea --namespace=services --name alea --values=settings.yaml`
+  - Install Alea in the `services` namespace, using your `settings.yaml`: `helm install alea/alea --namespace=services --name alea --values=settings.yaml`
   - Wait for the stack to be provisioned, then get the IP for the controller ingress: `kubectl -n services get ing`. Create an A-record for you DNS to point to whatever you set for the `controller.domain` setting to be.
   - Check out the **Usage section** below to start using the services in your Deis apps!
 
