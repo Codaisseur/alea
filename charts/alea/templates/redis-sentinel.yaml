@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: sentinel
-        image: "deis/redis:v0.0.5"
+        image: "deis/redis:v2.2.4"
         env:
           - name: SENTINEL
             value: "true"
