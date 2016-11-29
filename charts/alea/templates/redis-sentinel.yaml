@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: sentinel
-        image: "deis/redis:v2.2.4"
+        image: "deis/redis:{{ default "" .Values.redis.imageTag }}"
         env:
           - name: SENTINEL
             value: "true"

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: redis
-        image: "deis/redis:v2.2.4"
+        image: "deis/redis:{{ default "" .Values.redis.imageTag }}"
         ports:
         - containerPort: 6379
         resources:

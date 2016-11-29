@@ -81,6 +81,7 @@ Key | Default Value | Description
 `diskName` | `redis-data-disk` | Name of the redis data disk (should be unique per cluster, thus configurable).
 `storageClassName` | `slow` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
 `diskSize` | `200Gi` | Disk size of the Redis persistent disk.
+`imageTag` | `v2.2.4` | Image tag for the deis/redis image.
 
 ### API (`controller`)
 

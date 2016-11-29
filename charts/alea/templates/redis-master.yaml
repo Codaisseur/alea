@@ -11,7 +11,7 @@ metadata:
 spec:
   containers:
     - name: master
-      image: "deis/redis:v2.2.4"
+      image: "deis/redis:{{ default "" .Values.redis.imageTag }}"
       env:
         - name: MASTER
           value: "true"
@@ -26,7 +26,7 @@ spec:
         - mountPath: /redis-master-data
           name: data
     - name: sentinel
-      image: "deis/redis:v2.2.4"
+      image: "deis/redis:{{ default "" .Values.redis.imageTag }}"
       env:
         - name: SENTINEL
           value: "true"
