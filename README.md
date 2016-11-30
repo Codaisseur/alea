@@ -81,6 +81,7 @@ Key | Default Value | Description
 `diskName` | `redis-data-disk` | Name of the redis data disk (should be unique per cluster, thus configurable).
 `storageClassName` | `slow` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
 `diskSize` | `200Gi` | Disk size of the Redis persistent disk.
+`imageTag` | `v2.2.4` | Image tag for the deis/redis image.
 
 ### API (`controller`)
 
@@ -180,7 +181,7 @@ curl -XPOST https://services.yourdomain.com/redis_services
 Which will return something like:
 
 ```
-REDIS_URL=redis://redis-sentinel.services:26379/index_bus
+REDIS_URL=redis://redis-slave.services:26379/index_bus
 ```
 
 ## Get a Mongo db for new Apps

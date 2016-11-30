@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "redis-slave"
+  labels:
+    app: "redis"
+    role: "slave"
+    heritage: alea
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "redis"
+        role: "slave"
+    spec:
+      containers:
+        - name: "redis-slave"
+          image: "wallnerryan/redis-slave:{{ default "" .Values.redis.imageTag }}"
+          env:
+          - name: GET_HOSTS_FROM
+            value: env
+          ports:
+            - name: "redis-server"
+              containerPort: 6379
+          volumeMounts:
+            - mountPath: "/var/lib/redis"
+              name: redis-slave-data
+      volumes:
+        - name: redis-slave-data
+          emptyDir: {}

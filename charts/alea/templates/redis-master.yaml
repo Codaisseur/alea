@@ -1,39 +1,33 @@
-apiVersion: v1
-kind: Pod
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
+  name: "redis-master"
   labels:
     heritage: alea
-    name: redis
-    redis-sentinel: "true"
-    role: master
-    bootstrap: "true"
-  name: redis-master
+    app: "redis"
+    role: "master"
 spec:
-  containers:
-    - name: master
-      image: "deis/redis:v0.0.5"
-      env:
-        - name: MASTER
-          value: "true"
-        - name: DEBUG
-          value: "1"
-      ports:
-        - containerPort: 6379
-      resources:
-        limits:
-          cpu: "0.1"
-      volumeMounts:
-        - mountPath: /redis-master-data
-          name: data
-    - name: sentinel
-      image: "deis/redis:v0.0.5"
-      env:
-        - name: SENTINEL
-          value: "true"
-        - name: DEBUG
-          value: "1"
-      ports:
-        - containerPort: 26379
-  volumes:
-    - name: data
-      emptyDir: {}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "redis"
+        role: "master"
+    spec:
+      containers:
+        - name: "redis-master"
+          image: "wallnerryan/redis:{{ default "" .Values.redis.imageTag }}"
+          env:
+          - name: GET_HOSTS_FROM
+            value: env
+          command: ["/usr/bin/redis-server", "--appendonly","yes"]
+          ports:
+            - name: "redis-server"
+              containerPort: 6379
+          volumeMounts:
+            - name: redis-master-data
+              mountPath: "/var/lib/redis"
+      volumes:
+        - name: redis-master-data
+          persistentVolumeClaim:
+          claimName: "{{ .Values.redis.diskName }}-claim"
