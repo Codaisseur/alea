@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "{{ .Values.postgres.diskNamePrefix }}-1"
+  labels:
+    heritage: alea
+    name: "{{ .Values.postgres.diskNamePrefix }}-1"
+spec:
+  capacity:
+    storage: {{ .Values.postgres.diskSize }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: "{{ .Values.postgres.diskNamePrefix }}-1"
+    fsType: "ext4"
