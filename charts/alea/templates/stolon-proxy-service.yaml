@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: stolon-proxy-service
   labels:
-    heritage: alea
+    heritage: deis-backing-services
 spec:
   ports:
     - name: postgres
