@@ -56,7 +56,7 @@ redis:
   diskName: redis-data-disk
   storageClassName: slow
   diskSize: 200Gi
-  imageTag: v2.2.4
+  imageTag: latest
 
 controller:
   imageTag: v0.1.0 # latest

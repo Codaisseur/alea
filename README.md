@@ -181,7 +181,7 @@ curl -XPOST https://services.yourdomain.com/redis_services
 Which will return something like:
 
 ```
-REDIS_URL=redis://redis-sentinel.services:26379/index_bus
+REDIS_URL=redis://redis-slave.services:26379/index_bus
 ```
 
 ## Get a Mongo db for new Apps

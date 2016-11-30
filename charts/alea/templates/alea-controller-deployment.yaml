@@ -40,7 +40,7 @@ spec:
             - name: "RACK_ENV"
               value: production
             - name: "REDIS_URL"
-              value: "redis://redis-sentinel.services:26379/redis_services"
+              value: "redis://redis-slave.services:26379/redis_services"
             - name: "SECRET_KEY_BASE"
               valueFrom:
                 secretKeyRef:

@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "{{ .Values.redis.diskName }}-claim"
+  labels:
+    heritage: alea
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "{{ .Values.redis.storageClassName }}"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.redis.diskSize }}
