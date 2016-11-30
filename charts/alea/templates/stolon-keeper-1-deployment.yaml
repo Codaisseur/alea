@@ -1,25 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: stolon-keeper-2
+  name: stolon-keeper-1
   labels:
     heritage: alea
-    app: stolon-controller
+    role: stolon
 spec:
   replicas: 1
-  selector:
-    matchLabel:
-    - app: stolon-controller
   template:
     metadata:
       labels:
-        name: stolon-keeper-2
+        name: stolon-keeper-1
         stolon-cluster: "kube-stolon"
         stolon-keeper: "true"
         heritage: alea
     spec:
       containers:
-      - name: stolon-keeper-2
+      - name: stolon-keeper-1
         image: sorintlab/stolon:master
         env:
           - name: KEEPER
@@ -54,7 +51,7 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: "{{ .Values.postgres.diskNamePrefix }}-claim-2"
+            claimName: "{{ .Values.postgres.diskNamePrefix }}-claim-1"
         - name: stolon
           secret:
             secretName: stolon

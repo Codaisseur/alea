@@ -1,15 +1,12 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: stolon-proxy-rc
+  name: stolon-proxy-deployment
   labels:
     heritage: alea
-    app: stolon-controller
+    role: stolon
 spec:
   replicas: 1
-  selector:
-    matchLabel:
-    - app: stolon-controller
   template:
     metadata:
       labels:

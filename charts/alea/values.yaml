@@ -45,10 +45,10 @@ mongo:
 postgres:
   imageTag: latest
   imagePullPolicy: IfNotPresent
-  diskName: pg-data-disk
+  diskNamePrefix: pg-data-disk
   storageClassName: fast
   diskSize: 200Gi
-  username: postgres
+  username: stolon
   password: password
   database: backing_services
 

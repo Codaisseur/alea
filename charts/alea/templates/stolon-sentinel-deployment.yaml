@@ -4,12 +4,9 @@ metadata:
   name: stolon-sentinel-deployment
   labels:
     heritage: alea
-    app: stolon-controller
+    role: stolon
 spec:
   replicas: 1
-  selector:
-    matchLabel:
-    - app: stolon-controller
   template:
     metadata:
       labels:
