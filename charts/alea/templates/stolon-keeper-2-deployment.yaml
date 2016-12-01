@@ -4,7 +4,6 @@ metadata:
   name: stolon-keeper-2
   labels:
     heritage: alea
-    role: stolon
 spec:
   replicas: 1
   template:
