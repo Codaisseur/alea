@@ -16,7 +16,12 @@ spec:
     spec:
       containers:
       - name: stolon-proxy
-        image: sorintlab/stolon:master
+        image: sorintlab/stolon:master-pg9.6
+        command:
+          - "/bin/bash"
+          - "-ec"
+          - |
+            exec gosu stolon stolon-proxy
         env:
           - name: PROXY
             value: "true"
@@ -26,7 +31,9 @@ spec:
           - name: STPROXY_STORE_BACKEND
             value: "etcd" # Or consul
           - name: STPROXY_STORE_ENDPOINTS
-            value: "etcd-service:2379"
+            value: "http://etcd0.services:2379,http://etcd1.services:2379,http://etcd2.services:2379"
+          - name: STPROXY_LISTEN_ADDRESS
+            value: "0.0.0.0"
             # Enable debugging
           - name: STPROXY_DEBUG
             value: "true"

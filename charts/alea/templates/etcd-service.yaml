@@ -1,212 +1,174 @@
 apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: etcd
+    etcd_node: etcd0
+  name: etcd0
+spec:
+  containers:
+  - command:
+    - /usr/local/bin/etcd
+    - --name
+    - etcd0
+    - --initial-advertise-peer-urls
+    - http://etcd0:2380
+    - --listen-peer-urls
+    - http://0.0.0.0:2380
+    - --listen-client-urls
+    - http://0.0.0.0:2379
+    - --advertise-client-urls
+    - http://etcd0:2379
+    - --initial-cluster
+    - etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380
+    - --initial-cluster-state
+    - new
+    image: quay.io/coreos/etcd:latest
+    name: etcd0
+    ports:
+    - containerPort: 2379
+      name: client
+      protocol: TCP
+    - containerPort: 2380
+      name: server
+      protocol: TCP
+  restartPolicy: Never
+
+---
+
+apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
-metadata:
-  name: "etcd-service"
   labels:
-    heritage: alea
-    component: "{{.Release.Name}}-{{.Values.etcd.Component}}"
-    release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-  annotations:
-    "helm.sh/created": {{.Release.Time.Seconds | quote }}
+    etcd_node: etcd0
+  name: etcd0
 spec:
   ports:
-  - port: {{.Values.etcd.PeerPort}}
-    name: etcd-server
-  - port: {{.Values.etcd.ClientPort}}
-    name: etcd-client
-  clusterIP: None
+  - name: client
+    port: 2379
+    protocol: TCP
+    targetPort: 2379
+  - name: server
+    port: 2380
+    protocol: TCP
+    targetPort: 2380
   selector:
-    component: "{{.Release.Name}}-{{.Values.etcd.Component}}"
+    etcd_node: etcd0
+
 ---
-apiVersion: apps/v1alpha1
-kind: PetSet
+
+apiVersion: v1
+kind: Pod
 metadata:
-  name: "{{ printf "%s-%s" .Release.Name .Values.etcd.Name | trunc 24 }}"
   labels:
-    heritage: {{.Release.Service | quote }}
-    release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{.Release.Name}}-{{.Values.etcd.Component}}"
-  annotations:
-    "helm.sh/created": {{.Release.Time.Seconds | quote }}
+    app: etcd
+    etcd_node: etcd1
+  name: etcd1
 spec:
-  serviceName: "{{ printf "%s-%s" .Release.Name .Values.etcd.Name | trunc 24 }}"
-  replicas: {{default 3 .Values.etcd.Replicas}}
-  template:
-    metadata:
-      name: "{{ printf "%s-%s" .Release.Name .Values.etcd.Name | trunc 24 }}"
-      labels:
-        heritage: {{.Release.Service | quote }}
-        release: {{.Release.Name | quote }}
-        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-        component: "{{.Release.Name}}-{{.Values.etcd.Component}}"
-      annotations:
-        "helm.sh/created": {{.Release.Time.Seconds | quote }}
-        pod.alpha.kubernetes.io/initialized: "true"
-    spec:
-      containers:
-      - name: "{{ printf "%s-%s" .Release.Name .Values.etcd.Name | trunc 24 }}"
-        image: "{{.Values.etcd.Image}}:{{.Values.etcd.ImageTag}}"
-        imagePullPolicy: "{{.Values.etcd.ImagePullPolicy}}"
-        ports:
-        - containerPort: {{.Values.etcd.PeerPort}}
-          name: peer
-        - containerPort: {{.Values.etcd.ClientPort}}
-          name: client
-        resources:
-          requests:
-            cpu: "{{.Values.etcd.Cpu}}"
-            memory: "{{.Values.etcd.Memory}}"
-        env:
-        - name: INITIAL_CLUSTER_SIZE
-          value: {{default 3 .Values.etcd.Replicas | quote }}
-        - name: PETSET_NAME
-          value: "{{ printf "%s-%s" .Release.Name .Values.etcd.Name | trunc 24 }}"
-        volumeMounts:
-        - name: datadir
-          mountPath: /var/run/etcd
-        lifecycle:
-          preStop:
-            exec:
-              command:
-                - "/bin/sh"
-                - "-ec"
-                - |
-                  EPS=""
-                  for i in $(seq 0 $((${INITIAL_CLUSTER_SIZE} - 1))); do
-                      EPS="${EPS}${EPS:+,}http://${PETSET_NAME}-${i}.${PETSET_NAME}:2379"
-                  done
+  containers:
+  - command:
+    - /usr/local/bin/etcd
+    - --name
+    - etcd1
+    - --initial-advertise-peer-urls
+    - http://etcd1:2380
+    - --listen-peer-urls
+    - http://0.0.0.0:2380
+    - --listen-client-urls
+    - http://0.0.0.0:2379
+    - --advertise-client-urls
+    - http://etcd1:2379
+    - --initial-cluster
+    - etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380
+    - --initial-cluster-state
+    - new
+    image: quay.io/coreos/etcd:latest
+    name: etcd1
+    ports:
+    - containerPort: 2379
+      name: client
+      protocol: TCP
+    - containerPort: 2380
+      name: server
+      protocol: TCP
+  restartPolicy: Never
 
-                  HOSTNAME=$(hostname)
+---
 
-                  member_hash() {
-                      etcdctl member list | grep http://${HOSTNAME}.${PETSET_NAME}:2380 | cut -d':' -f1 | cut -d'[' -f1
-                  }
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    etcd_node: etcd1
+  name: etcd1
+spec:
+  ports:
+  - name: client
+    port: 2379
+    protocol: TCP
+    targetPort: 2379
+  - name: server
+    port: 2380
+    protocol: TCP
+    targetPort: 2380
+  selector:
+    etcd_node: etcd1
 
-                  echo "Removing ${HOSTNAME} from etcd cluster"
+---
 
-                  ETCDCTL_ENDPOINT=${EPS} etcdctl member remove $(member_hash)
-                  if [ $? -eq 0 ]; then
-                      # Remove everything otherwise the cluster will no longer scale-up
-                      rm -rf /var/run/etcd/*
-                  fi
-        command:
-          - "/bin/sh"
-          - "-ec"
-          - |
-            HOSTNAME=$(hostname)
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: etcd
+    etcd_node: etcd2
+  name: etcd2
+spec:
+  containers:
+  - command:
+    - /usr/local/bin/etcd
+    - --name
+    - etcd2
+    - --initial-advertise-peer-urls
+    - http://etcd2:2380
+    - --listen-peer-urls
+    - http://0.0.0.0:2380
+    - --listen-client-urls
+    - http://0.0.0.0:2379
+    - --advertise-client-urls
+    - http://etcd2:2379
+    - --initial-cluster
+    - etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380
+    - --initial-cluster-state
+    - new
+    image: quay.io/coreos/etcd:latest
+    name: etcd2
+    ports:
+    - containerPort: 2379
+      name: client
+      protocol: TCP
+    - containerPort: 2380
+      name: server
+      protocol: TCP
+  restartPolicy: Never
 
-            # store member id into PVC for later member replacement
-            collect_member() {
-                while ! etcdctl member list &>/dev/null; do sleep 1; done
-                etcdctl member list | grep http://${HOSTNAME}.${PETSET_NAME}:2380 | cut -d':' -f1 | cut -d'[' -f1 > /var/run/etcd/member_id
-                exit 0
-            }
+---
 
-            eps() {
-                EPS=""
-                for i in $(seq 0 $((${INITIAL_CLUSTER_SIZE} - 1))); do
-                    EPS="${EPS}${EPS:+,}http://${PETSET_NAME}-${i}.${PETSET_NAME}:2379"
-                done
-                echo ${EPS}
-            }
-
-            member_hash() {
-                etcdctl member list | grep http://${HOSTNAME}.${PETSET_NAME}:2380 | cut -d':' -f1 | cut -d'[' -f1
-            }
-
-            # re-joining after failure?
-            if [ -e /var/run/etcd/default.etcd ]; then
-                echo "Re-joining etcd member"
-                member_id=$(cat /var/run/etcd/member_id)
-
-                # re-join member
-                ETCDCTL_ENDPOINT=$(eps) etcdctl member update ${member_id} http://${HOSTNAME}.${PETSET_NAME}:2380
-                exec etcd --name ${HOSTNAME} \
-                    --listen-peer-urls http://${HOSTNAME}.${PETSET_NAME}:2380 \
-                    --listen-client-urls http://${HOSTNAME}.${PETSET_NAME}:2379,http://127.0.0.1:2379 \
-                    --advertise-client-urls http://${HOSTNAME}.${PETSET_NAME}:2379 \
-                    --data-dir /var/run/etcd/default.etcd
-            fi
-
-            # etcd-PET_ID
-            PET_ID=${HOSTNAME:5:${#HOSTNAME}}
-
-            # adding a new member to existing cluster (assuming all initial pets are available)
-            if [ "${PET_ID}" -ge ${INITIAL_CLUSTER_SIZE} ]; then
-                export ETCDCTL_ENDPOINT=$(eps)
-
-                # member already added?
-                MEMBER_HASH=$(member_hash)
-                if [ -n "${MEMBER_HASH}" ]; then
-                    # the member hash exists but for some reason etcd failed
-                    # as the datadir has not be created, we can remove the member
-                    # and retrieve new hash
-                    etcdctl member remove ${MEMBER_HASH}
-                fi
-
-                echo "Adding new member"
-                etcdctl member add ${HOSTNAME} http://${HOSTNAME}.${PETSET_NAME}:2380 | grep "^ETCD_" > /var/run/etcd/new_member_envs
-
-                if [ $? -ne 0 ]; then
-                    echo "Exiting"
-                    rm -f /var/run/etcd/new_member_envs
-                    exit 1
-                fi
-
-                cat /var/run/etcd/new_member_envs
-                source /var/run/etcd/new_member_envs
-
-                collect_member &
-
-                exec etcd --name ${HOSTNAME} \
-                    --listen-peer-urls http://${HOSTNAME}.${PETSET_NAME}:2380 \
-                    --listen-client-urls http://${HOSTNAME}.${PETSET_NAME}:2379,http://127.0.0.1:2379 \
-                    --advertise-client-urls http://${HOSTNAME}.${PETSET_NAME}:2379 \
-                    --data-dir /var/run/etcd/default.etcd \
-                    --initial-advertise-peer-urls http://${HOSTNAME}.${PETSET_NAME}:2380 \
-                    --initial-cluster ${ETCD_INITIAL_CLUSTER} \
-                    --initial-cluster-state ${ETCD_INITIAL_CLUSTER_STATE}
-            fi
-
-            for i in $(seq 0 $((${INITIAL_CLUSTER_SIZE} - 1))); do
-                while true; do
-                    echo "Waiting for ${PETSET_NAME}-${i}.${PETSET_NAME} to come up"
-                    ping -W 1 -c 1 ${PETSET_NAME}-${i}.${PETSET_NAME} > /dev/null && break
-                    sleep 1s
-                done
-            done
-
-            PEERS=""
-            for i in $(seq 0 $((${INITIAL_CLUSTER_SIZE} - 1))); do
-                PEERS="${PEERS}${PEERS:+,}${PETSET_NAME}-${i}=http://${PETSET_NAME}-${i}.${PETSET_NAME}:2380"
-            done
-
-            collect_member &
-
-            # join member
-            exec etcd --name ${HOSTNAME} \
-                --initial-advertise-peer-urls http://${HOSTNAME}.${PETSET_NAME}:2380 \
-                --listen-peer-urls http://${HOSTNAME}.${PETSET_NAME}:2380 \
-                --listen-client-urls http://${HOSTNAME}.${PETSET_NAME}:2379,http://127.0.0.1:2379 \
-                --advertise-client-urls http://${HOSTNAME}.${PETSET_NAME}:2379 \
-                --initial-cluster-token etcd-cluster-1 \
-                --initial-cluster ${PEERS} \
-                --initial-cluster-state new \
-                --data-dir /var/run/etcd/default.etcd
-  volumeClaimTemplates:
-  - metadata:
-      name: datadir
-      annotations:
-        volume.alpha.kubernetes.io/storage-class: anything
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          # upstream recommended max is 700M
-          storage: "{{.Values.etcd.Storage}}"
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    etcd_node: etcd2
+  name: etcd2
+spec:
+  ports:
+  - name: client
+    port: 2379
+    protocol: TCP
+    targetPort: 2379
+  - name: server
+    port: 2380
+    protocol: TCP
+    targetPort: 2380
+  selector:
+    etcd_node: etcd2

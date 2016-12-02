@@ -3,7 +3,7 @@
 # Declare name/value pairs to be passed into your templates.
 # name: value
 Name: alea
-region: europe-west1-b
+region: europe-west1-c
 
 ## Persistent Storage Configuration
 #
@@ -28,7 +28,7 @@ storage:
   provisioner: kubernetes.io/gce-pd
   standardType: pd-standard
   ssdType: pd-ssd
-  zone: europe-west1-b
+  zone: europe-west1-c
   iopsPerGB: "10" # for AWS
 
 etcd:

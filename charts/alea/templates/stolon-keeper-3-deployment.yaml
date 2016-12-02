@@ -37,7 +37,7 @@ spec:
           - name: STKEEPER_STORE_BACKEND
             value: "etcd" # Or consul
           - name: STKEEPER_STORE_ENDPOINTS
-            value: "http://etcd-service:2379"
+            value: "http://etcd0.services:2379,http://etcd1.services:2379,http://etcd2.services:2379"
             # Enable debugging
           - name: STKEEPER_PG_REPL_USERNAME
             value: "repluser"
