@@ -1,7 +1,3 @@
-# TODO: Had to create an initial cluster config
-#
-# kubectl -n services exec stolon-sentinel-deployment-3010693377-5kl5j -c stolon-sentinel -i -t -- bash -il
-#   > stolonctl --cluster-name=kube-stolon --store-backend=etcd --store-endpoints=http://etcd0.services:2379,http://etcd1.services:2379,http://etcd2.services:2379 init --yes
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
