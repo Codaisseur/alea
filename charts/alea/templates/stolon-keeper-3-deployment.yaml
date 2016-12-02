@@ -14,19 +14,30 @@ spec:
         stolon-keeper: "true"
         heritage: alea
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
-      - name: stolon-keeper-3
-        image: sorintlab/stolon:master
+      - name: stolon-keeper
+        image: sorintlab/stolon:master-pg9.6
+        command:
+          - "/bin/bash"
+          - "-ec"
+          - |
+            export POD_IP=$(hostname -i)
+            export STKEEPER_PG_LISTEN_ADDRESS=$POD_IP
+            chown stolon:stolon $PGDATA
+            exec gosu stolon stolon-keeper --data-dir $PGDATA
         env:
           - name: KEEPER
             value: "true"
+          - name: STKEEPER_ID
+            value: "keeper2"
           - name: STKEEPER_CLUSTER_NAME
-          # TODO(sgotti) Get cluster name from "stoloncluster" label using a downward volume api instead of duplicating the name here
+          # TODO(sgotti) Get cluster name from "stoloncluster" label using a downward volume api instead of duplicating the name here?
             value: "kube-stolon"
           - name: STKEEPER_STORE_BACKEND
             value: "etcd" # Or consul
           - name: STKEEPER_STORE_ENDPOINTS
-            value: "etcd-service:2379"
+            value: "http://etcd-service:2379"
             # Enable debugging
           - name: STKEEPER_PG_REPL_USERNAME
             value: "repluser"
@@ -40,7 +51,6 @@ spec:
           - name: STKEEPER_DEBUG
             value: "true"
         ports:
-          - containerPort: 5431
           - containerPort: 5432
         volumeMounts:
         - mountPath: /stolon-data
