@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stolon-init
+  labels:
+    heritage: alea
+spec:
+  template:
+    metadata:
+      name: stolon-init
+    spec:
+      containers:
+      - name: stolon-init
+        image: sorintlab/stolon:master-pg9.6
+        command: ["stolonctl", "--cluster-name=kube-stolon", "--store-backend=etcd", "--store-endpoints=http://etcd0.services:2379,http://etcd1.services:2379,http://etcd2.services:2379", "init", "--yes"]
+      restartPolicy: Never
