@@ -19,6 +19,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/codaisseur/alea/git"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -58,7 +60,7 @@ func init() {
 	// will be global for your application.
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.alea.yaml)")
-	RootCmd.PersistentFlags().StringVarP(&cfg.app, "app", "a", "", "deis app name, set it manually if it can't be resolved from the deis git remote")
+	RootCmd.Flags().StringVarP(&cfg.app, "app", "a", "", "deis app name, set it manually if it can't be resolved from the deis git remote")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -69,6 +71,11 @@ func init() {
 func initConfig() {
 	if cfgFile == "" { // enable ability to specify config file via flag
 		cfgFile = filepath.Join(os.Getenv("HOME"), ".alea.toml")
+	}
+
+	if cfg.app == "" {
+		cfg.app = git.GetAppFromRemote()
+		fmt.Println("App:", cfg.app)
 	}
 
 	viper.SetConfigFile(cfgFile)

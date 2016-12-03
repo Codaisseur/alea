@@ -37,20 +37,35 @@ func init() {
 }
 
 func configure(cmd *cobra.Command, args []string) {
-	initConfig()
 	if cfg.controller != "" {
 		viper.Set("controller", cfg.controller)
 		fmt.Println("Controller set to:", cfg.controller)
+		writeConfig()
 	}
-	writeConfig()
+	fmt.Println("\nConfig:\n----------------")
+	fmt.Println(getConfig())
 }
 
 func writeConfig() {
+	ioutil.WriteFile(cfgFile, []byte(tomlConfig()), 0600)
+	fmt.Println("Config updated.\n")
+}
+
+func tomlConfig() string {
 	var firstBuffer bytes.Buffer
 	if err := toml.NewEncoder(&firstBuffer).Encode(viper.AllSettings()); err != nil {
 		// handle error
 		panic(err)
 	}
-	ioutil.WriteFile(cfgFile, []byte(firstBuffer.String()), 0600)
-	fmt.Println("Config updated.\n\n", firstBuffer.String())
+
+	return firstBuffer.String()
+}
+
+func getConfig() string {
+	dat, err := ioutil.ReadFile(cfgFile)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(dat)
 }
