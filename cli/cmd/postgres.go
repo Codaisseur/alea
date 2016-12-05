@@ -16,11 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"os/exec"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -55,43 +50,9 @@ func init() {
 func createDatabase(cmd *cobra.Command, args []string) {
 	fmt.Print("Creating PostgreSQL database...")
 
-	databaseUrl := requestDatabaseUrl()
+	databaseUrl := RequestServiceUrl("postgres_databases")
 
 	fmt.Printf("Adding new DATABASE_URL to %s...", cfg.app)
 
-	_, err := exec.Command("deis", "config:set", databaseUrl, "-a", cfg.app).Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	out, err := exec.Command("deis", "config").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("done!\n\n%s\n", out)
-}
-
-func requestDatabaseUrl() string {
-	url := fmt.Sprintf("%s/postgres_databases", cfg.controller)
-
-	payload := strings.NewReader(fmt.Sprintf("app=%s", cfg.app))
-
-	req, _ := http.NewRequest("POST", url, payload)
-
-	req.Header.Add("content-type", "application/x-www-form-urlencoded")
-	req.Header.Add("cache-control", "no-cache")
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println(" failed!")
-		log.Fatal(err)
-	}
-
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	fmt.Println(" done")
-
-	return string(body)
+	DeisConfigSet(databaseUrl)
 }
