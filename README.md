@@ -67,10 +67,10 @@ Key | Default Value | Description
 --- | ------------- | -----------
 `imageTag` | `latest` | Image tag for the paunin/postgresql-cluster-pgpool and paunin/postgresql-cluster-pgsql images.
 `imagePullPolicy` | `IfNotPresent` | Pull policy for above images.
-`diskName` | `pg-data-disk` | Name of postgres primary's data disk (should be unique per cluster, thus configurable).
+`diskNamePrefix` | `pg-data-disk` | Name prefix of postgres data disks (should be unique per cluster, thus configurable).
 `storageClassName` | `fast` | The class name of the storage type to use (`fast` or `slow`, see `storage.ssdClassName` and `storage.standardClassName`).
 `diskSize` | `200Gi` | Disk size for postgres primary's disk.
-`username` | `postgres` | Username for the postgres (root) user.
+`username` | `stolon` | Username for the postgres (root) user.
 `password` | `password` | Password for the postgres (root) user.
 `database` | `backing_services` | Name of the API's database. The API uses this database to store the services it gave out to users of your cluster.
 

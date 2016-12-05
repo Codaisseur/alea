@@ -2,8 +2,8 @@
 # This is a YAML-formatted file.
 # Declare name/value pairs to be passed into your templates.
 # name: value
-
-region: europe-west1-b
+Name: alea
+region: europe-west1-c
 
 ## Persistent Storage Configuration
 #
@@ -28,8 +28,20 @@ storage:
   provisioner: kubernetes.io/gce-pd
   standardType: pd-standard
   ssdType: pd-ssd
-  zone: europe-west1-b
+  zone: europe-west1-c
   iopsPerGB: "10" # for AWS
+
+etcd:
+  PeerPort: 2380
+  ClientPort: 2379
+  Component: "etcd"
+  Replicas: 3
+  Image: "gcr.io/google_containers/etcd-amd64"
+  ImageTag: "2.2.5"
+  ImagePullPolicy: "Always"
+  Cpu: "100m"
+  Memory: "512Mi"
+  Storage: "1Gi"
 
 mongo:
   diskName: mongodb-data-disk
@@ -45,10 +57,10 @@ mongo:
 postgres:
   imageTag: latest
   imagePullPolicy: IfNotPresent
-  diskName: pg-data-disk
+  diskNamePrefix: pg-data-disk
   storageClassName: fast
   diskSize: 200Gi
-  username: postgres
+  username: stolon
   password: password
   database: backing_services
 
