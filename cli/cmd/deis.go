@@ -21,15 +21,25 @@ import (
 )
 
 func DeisConfigSet(envVar string) {
+	ExecDeisConfigSet(envVar, true)
+}
+
+func DeisSilentConfigSet(envVar string) {
+	ExecDeisConfigSet(envVar, false)
+}
+
+func ExecDeisConfigSet(envVar string, output bool) {
 	_, err := exec.Command("deis", "config:set", envVar, "-a", cfg.app).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	out, err := exec.Command("deis", "config").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
+	if output {
+		out, err := exec.Command("deis", "config").Output()
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	fmt.Printf("done!\n\n%s\n", out)
+		fmt.Printf("done!\n\n%s\n", out)
+	}
 }
