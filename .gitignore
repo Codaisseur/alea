@@ -22,3 +22,4 @@ charts/dev.yaml
 charts/controller-ssl.yaml
 charts/controller-ssl-*.yaml
 charts/settings.yaml
+.powder
