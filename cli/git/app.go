@@ -5,12 +5,31 @@ import (
 	"os"
 
 	"net/url"
-	"strings"
+	"regexp"
 
 	"github.com/libgit2/git2go"
 )
 
 func GetAppFromRemote() string {
+	uri := GetDeisRemoteUri()
+	re := regexp.MustCompile("^/([a-zA-Z0-9-_.]+).git")
+	matches := re.FindStringSubmatch(uri.EscapedPath())
+
+	if len(matches) == 0 {
+		fmt.Println("ERROR: Could not resolve app from remote")
+		os.Exit(1)
+	}
+
+	return string(matches[1])
+}
+
+func GetControllerFromRemote() string {
+	uri := GetDeisRemoteUri()
+	re := regexp.MustCompile("^([a-z-_]+)(.*)(:\\d+)$")
+	return re.ReplaceAllString(uri.Host, "https://services$2")
+}
+
+func GetDeisRemoteUri() *url.URL {
 	repo, err := git.OpenRepository(".")
 	if err != nil {
 		fmt.Println("Not a git repository")
@@ -29,12 +48,12 @@ func GetAppFromRemote() string {
 		panic(err)
 	}
 
-	url, err := url.Parse(deisRemote.Url())
+	uri, err := url.Parse(deisRemote.Url())
 	if err != nil {
 		panic(err)
 	}
 
-	return strings.Split(strings.Split(url.EscapedPath(), ".")[0], "/")[1]
+	return uri
 }
 
 func stringInSlice(a string, list []string) bool {

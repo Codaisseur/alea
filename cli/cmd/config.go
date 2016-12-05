@@ -32,14 +32,12 @@ var configCmd = &cobra.Command{
 }
 
 func init() {
-	configCmd.Flags().StringVar(&cfg.controller, "controller", "", "alea controller URL, set it manually if it can't be resolved from the deis git remote, defaults to services.<deis.domain>")
 	RootCmd.AddCommand(configCmd)
 }
 
 func configure(cmd *cobra.Command, args []string) {
 	if cfg.controller != "" {
-		viper.Set("controller", cfg.controller)
-		fmt.Println("Controller set to:", cfg.controller)
+		fmt.Println("Controller set to:", viper.GetString("controller"))
 		writeConfig()
 	}
 	fmt.Println("\nConfig:\n----------------")
@@ -52,13 +50,13 @@ func writeConfig() {
 }
 
 func tomlConfig() string {
-	var firstBuffer bytes.Buffer
-	if err := toml.NewEncoder(&firstBuffer).Encode(viper.AllSettings()); err != nil {
+	var buffer bytes.Buffer
+	if err := toml.NewEncoder(&buffer).Encode(viper.AllSettings()); err != nil {
 		// handle error
 		panic(err)
 	}
 
-	return firstBuffer.String()
+	return buffer.String()
 }
 
 func getConfig() string {

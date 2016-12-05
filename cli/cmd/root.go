@@ -60,22 +60,22 @@ func init() {
 	// will be global for your application.
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.alea.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfg.controller, "controller", "", "alea controller URL, set it manually if it can't be resolved from the deis git remote, defaults to services.<deis.domain>")
 	RootCmd.Flags().StringVarP(&cfg.app, "app", "a", "", "deis app name, set it manually if it can't be resolved from the deis git remote")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	// RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	if cfg.app == "" {
+		cfg.app = git.GetAppFromRemote()
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile == "" { // enable ability to specify config file via flag
 		cfgFile = filepath.Join(os.Getenv("HOME"), ".alea.toml")
-	}
-
-	if cfg.app == "" {
-		cfg.app = git.GetAppFromRemote()
-		fmt.Println("App:", cfg.app)
 	}
 
 	viper.SetConfigFile(cfgFile)
@@ -87,10 +87,19 @@ func initConfig() {
 
 	// bind flags
 	viper.BindPFlag("controller", RootCmd.PersistentFlags().Lookup("controller"))
-	viper.BindPFlag("app", RootCmd.PersistentFlags().Lookup("app"))
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		// fmt.Println("Using config file:", viper.ConfigFileUsed())
+
+		// Try to set the controller to the value found in the config
+		if cfg.controller == "" {
+			cfg.controller = viper.GetString("controller")
+		}
+
+		// Try to resolve the controller URL from the deis git remote if it's still blank
+		if cfg.controller == "" {
+			cfg.controller = git.GetControllerFromRemote()
+		}
 	}
 }
