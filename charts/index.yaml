@@ -2,9 +2,21 @@ apiVersion: v1
 entries:
   alea:
   - apiVersion: v1
-    created: 2016-11-29T01:45:36.980933843+01:00
+    created: 2016-12-05T16:10:21.187830706+01:00
     description: A Helm chart for Backing Services for your Deis cluster.
-    digest: e3719dba65aa0f22224aa8db7b103e418b10812837b59b0216b6a93f5bafd41e
+    digest: 9e496c4aa089c5289bcd8c5f274764b8d252a817fd527edde58df66af1c2a3b8
+    engine: gotpl
+    maintainers:
+    - email: info@codaisseur.com
+      name: Codaisseur Team
+    name: alea
+    urls:
+    - https://storage.googleapis.com/alea-charts/alea-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v1
+    created: 2016-12-05T16:10:21.186923396+01:00
+    description: A Helm chart for Backing Services for your Deis cluster.
+    digest: 6cc3fbaead2e6d193d0aca85bcfb4435ffdff84de1c0a28b995ce8923b8e7fed
     engine: gotpl
     maintainers:
     - email: info@codaisseur.com
@@ -14,7 +26,7 @@ entries:
     - https://storage.googleapis.com/alea-charts/alea-0.1.2.tgz
     version: 0.1.2
   - apiVersion: v1
-    created: 2016-11-29T01:45:36.978928755+01:00
+    created: 2016-12-05T16:10:21.175216836+01:00
     description: A Helm chart for Backing Services for your Deis cluster.
     digest: 785c36257e7f024fc7a6458aa393753c3635c8cd380262ed9a5efd1ec761c734
     engine: gotpl
@@ -26,7 +38,7 @@ entries:
     - https://storage.googleapis.com/alea-charts/alea-0.1.1.tgz
     version: 0.1.1
   - apiVersion: v1
-    created: 2016-11-29T01:45:36.978034298+01:00
+    created: 2016-12-05T16:10:21.173834143+01:00
     description: A Helm chart for Backing Services for your Deis cluster.
     digest: a8ea579bd2e81c31fc3a6496880f534d7d4c9ae5729b775684b978e96ea00077
     engine: gotpl
@@ -37,4 +49,4 @@ entries:
     urls:
     - https://storage.googleapis.com/alea-charts/alea-0.1.0.tgz
     version: 0.1.0
-generated: 2016-11-29T01:45:36.97692492+01:00
+generated: 2016-12-05T16:10:21.171806166+01:00

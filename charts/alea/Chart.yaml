@@ -1,7 +1,7 @@
 apiVersion: v1
 description: A Helm chart for Backing Services for your Deis cluster.
 name: alea
-version: 0.1.2
+version: 0.2.0
 maintainers:
   - name: Codaisseur Team
     email: info@codaisseur.com
