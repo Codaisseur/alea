@@ -237,12 +237,13 @@ Feel free to help us out or leave any feedback in the issues :)
   - **2016-08-08** Fixed MongoDB issues, running from Dockerfile now
   - **2016-10-24** Moved away from Stolon and to a setup by @paunin with pgpool2
   - **2016-10-24** Moved away from Helm Classic and to the new Helm
+  - **2016-12-05 RELEASE 0.2.0** Moved back to Stolon and upgraded Redis cluster
 
 ## Thanks to
 
   - The [Deis](https://deis.com/) Team for the awesomeness that is our own PaaS!
   - The Bitnami team for their awesome list of [helm charts](https://github.com/bitnami/charts)
-  - @paunin for his [postgresql cluster setup](https://github.com/paunin/postgres-docker-cluster)
+  - The Storint.lab team for their super duper HA Postgres solution [Stolon](https://github.com/sorintlab/stolon)
 
 [helm]: https://github.com/kubernetes/helm
 [codaisseur]: https://www.codaisseur.com
