@@ -1,0 +1,12 @@
+package: github.com/codaisseur/alea
+import:
+- package: github.com/BurntSushi/toml
+  version: ^0.2.0
+- package: github.com/codaisseur/alea
+  subpackages:
+  - cmd
+  - git
+- package: github.com/libgit2/git2go
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
+- package: github.com/arschles/assert

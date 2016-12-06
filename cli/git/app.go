@@ -26,8 +26,17 @@ import (
 
 func GetAppFromRemote() string {
 	uri := GetDeisRemoteUri()
+	return appFromDeisRemote(uri)
+}
+
+func GetControllerFromRemote() string {
+	uri := GetDeisRemoteUri()
+	return controllerFromDeisRemote(uri)
+}
+
+func appFromDeisRemote(remote *url.URL) string {
 	re := regexp.MustCompile("^/([a-zA-Z0-9-_.]+).git")
-	matches := re.FindStringSubmatch(uri.EscapedPath())
+	matches := re.FindStringSubmatch(remote.EscapedPath())
 
 	if len(matches) == 0 {
 		fmt.Println("ERROR: Could not resolve app from remote")
@@ -37,10 +46,9 @@ func GetAppFromRemote() string {
 	return string(matches[1])
 }
 
-func GetControllerFromRemote() string {
-	uri := GetDeisRemoteUri()
+func controllerFromDeisRemote(remote *url.URL) string {
 	re := regexp.MustCompile("^([a-z-_]+)(.*)(:\\d+)$")
-	return re.ReplaceAllString(uri.Host, "https://services$2")
+	return re.ReplaceAllString(remote.Host, "https://services$2")
 }
 
 func GetDeisRemoteUri() *url.URL {
