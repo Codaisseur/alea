@@ -15,35 +15,49 @@
 package git
 
 import (
-	"fmt"
-	"os"
+	"errors"
+	"os/exec"
+	"strings"
 
 	"net/url"
 	"regexp"
-
-	"github.com/libgit2/git2go"
 )
 
-func GetAppFromRemote() string {
-	uri := GetDeisRemoteUri()
+var (
+	// ErrRemoteNotFound is returned when the remote cannot be found in git
+	ErrRemoteNotFound = errors.New("Could not find remote matching app in 'git remote -v'")
+	// ErrInvalidRepositoryList is an error returned if git returns unparsible output
+	ErrInvalidRepositoryList = errors.New("Invalid output in 'git remote -v'")
+	// ErrRemoteNotApp is returned when the remote can't be parsed to an app name
+	ErrRemoteNotApp = errors.New("ERROR: Could not resolve app from remote")
+)
+
+func GetAppFromRemote() (string, error) {
+	uri, err := GetDeisRemoteUri()
+	if err != nil {
+		return "", err
+	}
+
 	return appFromDeisRemote(uri)
 }
 
-func GetControllerFromRemote() string {
-	uri := GetDeisRemoteUri()
-	return controllerFromDeisRemote(uri)
+func GetControllerFromRemote() (string, error) {
+	uri, err := GetDeisRemoteUri()
+	if err != nil {
+		return "", err
+	}
+	return controllerFromDeisRemote(uri), nil
 }
 
-func appFromDeisRemote(remote *url.URL) string {
+func appFromDeisRemote(remote *url.URL) (string, error) {
 	re := regexp.MustCompile("^/([a-zA-Z0-9-_.]+).git")
 	matches := re.FindStringSubmatch(remote.EscapedPath())
 
 	if len(matches) == 0 {
-		fmt.Println("ERROR: Could not resolve app from remote")
-		os.Exit(1)
+		return "", ErrRemoteNotApp
 	}
 
-	return string(matches[1])
+	return string(matches[1]), nil
 }
 
 func controllerFromDeisRemote(remote *url.URL) string {
@@ -51,31 +65,28 @@ func controllerFromDeisRemote(remote *url.URL) string {
 	return re.ReplaceAllString(remote.Host, "https://services$2")
 }
 
-func GetDeisRemoteUri() *url.URL {
-	repo, err := git.OpenRepository(".")
-	if err != nil {
-		fmt.Println("Not a git repository")
-		os.Exit(1)
+func GetDeisRemoteUri() (*url.URL, error) {
+	out, err := exec.Command("git", "remote", "-v").Output()
+	emptyUrl, _ := url.Parse("")
+
+	for _, line := range strings.Split(string(out), "\n") {
+		// git remote -v contains both push and fetch remotes.
+		// They're generally identical, and deis only cares about push.
+		if strings.HasSuffix(line, "(push)") {
+			parts := strings.Split(line, "\t")
+			if len(parts) < 2 {
+				return emptyUrl, ErrInvalidRepositoryList
+			}
+
+			if parts[0] == "deis" {
+				uri, err := url.Parse(strings.Split(parts[1], " ")[0])
+
+				return uri, err
+			}
+		}
 	}
 
-	remotes, err := repo.Remotes.List()
-
-	if !stringInSlice("deis", remotes) {
-		fmt.Println("No deis remote found")
-		os.Exit(1)
-	}
-
-	deisRemote, err := repo.Remotes.Lookup("deis")
-	if err != nil {
-		panic(err)
-	}
-
-	uri, err := url.Parse(deisRemote.Url())
-	if err != nil {
-		panic(err)
-	}
-
-	return uri
+	return emptyUrl, err
 }
 
 func stringInSlice(a string, list []string) bool {

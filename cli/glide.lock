@@ -1,8 +1,12 @@
-hash: a9af866b32c6bd5983c45b71c0dec15609f4aa58e7c0203bbdb2b3dccfcb8133
-updated: 2016-12-05T20:55:09.823586972+01:00
+hash: c9fdda203b87f00db9f6d34d87cef3c53cccd20b477f6214dc03a585e6c5ea34
+updated: 2016-12-15T12:45:19.633257764+01:00
 imports:
+- name: github.com/arschles/assert
+  version: bb58b908265b5931732079df03f2818bf2167ba0
 - name: github.com/BurntSushi/toml
   version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
+- name: github.com/deis/workflow-cli
+  version: d2938c8e9bea434eca7b1ddeeb37938c38662b5d
 - name: github.com/fsnotify/fsnotify
   version: fd9ec7deca8bf46ecd2a795baaacf2b3a9be1197
 - name: github.com/hashicorp/hcl
@@ -18,8 +22,6 @@ imports:
   - json/token
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
-- name: github.com/libgit2/git2go
-  version: 1c8297ab834aa3ca5f3c4128ded2758a680a9e60
 - name: github.com/magiconair/properties
   version: 9c47895dc1ce54302908ab8a43385d1f5df2c11c
 - name: github.com/mitchellh/mapstructure

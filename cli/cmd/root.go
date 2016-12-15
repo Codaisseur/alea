@@ -68,7 +68,13 @@ func init() {
 	// RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	if cfg.app == "" {
-		cfg.app = git.GetAppFromRemote()
+		app, err := git.GetAppFromRemote()
+
+		if err != nil {
+			fmt.Println("Could not get App from git remote\n\nRun this command from the root of your Deis app for best results or pass in -a <app-name>\n\n")
+		}
+
+		cfg.app = app
 	}
 }
 
@@ -99,7 +105,7 @@ func initConfig() {
 
 		// Try to resolve the controller URL from the deis git remote if it's still blank
 		if cfg.controller == "" {
-			cfg.controller = git.GetControllerFromRemote()
+			cfg.controller, err = git.GetControllerFromRemote()
 		}
 	}
 }

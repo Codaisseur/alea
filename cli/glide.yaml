@@ -6,7 +6,7 @@ import:
   subpackages:
   - cmd
   - git
-- package: github.com/libgit2/git2go
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
 - package: github.com/arschles/assert
+- package: github.com/deis/workflow-cli

@@ -15,9 +15,10 @@ func TestAppFromDeisRemote(t *testing.T) {
 	assert.Equal(t, nil, err, "app-from-deis-remote")
 
 	expected := "api.coderunner"
-	actual := appFromDeisRemote(url)
+	actual, err := appFromDeisRemote(url)
 
 	assert.Equal(t, expected, actual, "app-from-deis-remote")
+	assert.Equal(t, nil, err, "app-from-deis-remote")
 }
 
 func TestControllerFromDeisRemote(t *testing.T) {
