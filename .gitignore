@@ -20,4 +20,8 @@ kubernetes/bin/deisconfig
 charts/alea-*.tgz
 charts/dev.yaml
 charts/controller-ssl.yaml
+charts/controller-ssl-*.yaml
 charts/settings.yaml
+.powder
+cli/vendor
+_dist/

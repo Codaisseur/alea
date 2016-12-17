@@ -6,7 +6,7 @@ build: lint
 
 install: build
 	helm install --namespace services --name alea --values=settings.yaml alea
-	if [ -f controller-ssl.yaml ]; then kubectl create -f controller-ssl.yaml; fi
+	if [ -f controller-ssl-${CLOUDEXT}.yaml ]; then kubectl create -f controller-ssl-${CLOUDEXT}.yaml; fi
 
 upgrade: build
 	helm upgrade alea --namespace services --values=custom.yaml alea
