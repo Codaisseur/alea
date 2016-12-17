@@ -24,3 +24,4 @@ charts/controller-ssl-*.yaml
 charts/settings.yaml
 .powder
 cli/vendor
+_dist/
