@@ -1,10 +1,10 @@
 kind: PersistentVolume
 apiVersion: v1/beta1
 metadata:
-  name: {{ .Values.mongo.diskName }}
+  name: {{ .Values.redis.diskName }}
   labels:
     heritage: alea
-    name: {{ .Values.mongo.diskName }}
+    name: {{ .Values.redis.diskName }}
 spec:
   capicity:
     stoage: {{ .Values.redis.diskSize }}
