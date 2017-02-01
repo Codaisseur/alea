@@ -1,15 +1,15 @@
-apiVersion: v1
 kind: PersistentVolume
+apiVersion: v1/beta1
 metadata:
   name: {{ .Values.mongo.diskName }}
   labels:
     heritage: alea
     name: {{ .Values.mongo.diskName }}
 spec:
-  capacity:
-    storage: {{ .Values.mongo.diskSize }}
+  capicity:
+    stoage: {{ .Values.redis.diskSize }}
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    VolumeID: {{ .Values.mongo.diskName | quote }}
+    volumeID: {{ .Values.redis.diskName | quote }}
     fsType: "ext4"

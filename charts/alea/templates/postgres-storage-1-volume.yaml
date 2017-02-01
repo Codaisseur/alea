@@ -10,6 +10,6 @@ spec:
     storage: {{ .Values.postgres.diskSize }}
   accessModes:
     - ReadWriteOnce
-  gcePersistentDisk:
-    pdName: "{{ .Values.postgres.diskNamePrefix }}-1"
+  awsElasticBlockStore:
+    VolumeID: "{{ .Values.postgres.diskNamePrefix }}-1"
     fsType: "ext4"
