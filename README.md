@@ -112,10 +112,10 @@ controller:
 
 ## Setting up SSL for the Controller Ingress
 
-The Alea Controller Ingress needs an SSL certificate. To set this up, create a yaml file, `controler-ssl.yaml`, and put in the following:
+The Alea Controller Ingress needs an SSL certificate. To set this up, create a yaml file, `controller-ssl.yaml`, and put in the following:
 
 ```yaml
-# controler-ssl.yaml
+# controller-ssl.yaml
 
 apiVersion: v1
 kind: Secret
