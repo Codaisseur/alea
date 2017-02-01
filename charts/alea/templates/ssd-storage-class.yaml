@@ -8,4 +8,4 @@ provisioner: {{ .Values.storage.provisioner }}
 parameters:
   type: {{ .Values.storage.ssdType }}
   zone: {{ default "" .Values.storage.zone }}
-  # iopsPerGB: {{ default "" .Values.storage.iopsPerGB | quote }}
+  # iopsPerGB: {{ default "" .Values.storage.iopsPerGB | quote }} Only for io1

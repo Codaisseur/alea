@@ -8,4 +8,4 @@ provisioner: {{ .Values.storage.provisioner }}
 parameters:
   type: {{ .Values.storage.standardType }}
   zone: {{ default "" .Values.storage.zone }}
-  # iopsPerGB: {{ default "" .Values.storage.iopsPerGB | quote }}
+  # iopsPerGB: {{ default "" .Values.storage.iopsPerGB | quote }} only for io1
