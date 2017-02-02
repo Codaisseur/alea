@@ -52,7 +52,7 @@ func createDatabase(cmd *cobra.Command, args []string) {
 
 	databaseUrl := RequestServiceUrl("postgres_databases")
 
-	fmt.Printf("Adding new DATABASE_URL to %s...", cfg.app)
+	fmt.Printf("Adding new DATABASE_URL %s to %s...", databaseUrl, cfg.app)
 
 	DeisConfigSet(databaseUrl)
 }

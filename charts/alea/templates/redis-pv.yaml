@@ -7,9 +7,9 @@ metadata:
     name: {{ .Values.redis.diskName }}
 spec:
   capacity:
-    stoage: {{ .Values.redis.diskSize }}
+    storage: {{ .Values.redis.diskSize }}
   accessModes:
     - ReadWriteOnce
-  gcePersistentDik:
+  gcePersistentDisk:
     pdName: {{ .Values.redis.diskName | quote }}
     fsType: "ext4"
