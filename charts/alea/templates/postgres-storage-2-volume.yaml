@@ -11,5 +11,5 @@ spec:
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    VolumeID: "{{ .Values.postgres.diskNamePrefix }}-2"
+    volumeID: "{{ .Values.postgres.diskNamePrefix }}-2"
     fsType: "ext4"

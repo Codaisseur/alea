@@ -11,5 +11,5 @@ spec:
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    VolumeID: {{ .Values.mongo.diskName | quote }}
+    volumeID: {{ .Values.mongo.diskName | quote }}
     fsType: "ext4"
