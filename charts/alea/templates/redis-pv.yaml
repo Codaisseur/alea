@@ -1,5 +1,5 @@
 kind: PersistentVolume
-apiVersion: v1/beta1
+apiVersion: v1
 metadata:
   name: {{ .Values.redis.diskName }}
   labels:
