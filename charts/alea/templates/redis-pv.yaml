@@ -1,0 +1,15 @@
+kind: PersistentVolume
+apiVersion: v1/beta1
+metadata:
+  name: {{ .Values.redis.diskName }}
+  labels:
+    heritage: alea
+    name: {{ .Values.redis.diskName }}
+spec:
+  capacity:
+    stoage: {{ .Values.redis.diskSize }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDik:
+    pdName: {{ .Values.redis.diskName | quote }}
+    fsType: "ext4"
