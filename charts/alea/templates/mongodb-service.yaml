@@ -11,4 +11,4 @@ spec:
     port: 27017
     targetPort: mongodb
   selector:
-    app: mongodb-service
+    app: mongodb-apps
