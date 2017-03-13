@@ -56,5 +56,4 @@ spec:
           mountPath: /bitnami/mongodbt
       volumes:
       - name: mongodb-data
-        persistentVolumeClaim:
-          claimName: "{{ .Values.mongo.diskName }}-claim"
+        emptyDir: {}

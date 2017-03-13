@@ -59,8 +59,7 @@ spec:
           name: stolon
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: "{{ .Values.postgres.diskNamePrefix }}-claim-2"
+          emptyDir: {}
         - name: stolon
           secret:
             secretName: stolon
