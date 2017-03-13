@@ -7,8 +7,7 @@ metadata:
     heritage: alea
 spec:
   tls:
-  - host: {{ default "services.example.com" .Values.controller.hostname | quote }}
-    secretName: controller-ssl-cert
+    - secretName: controller-ssl-cert
   backend:
     serviceName: alea-controller-service
     servicePort: 80
