@@ -3,7 +3,7 @@
 # Declare name/value pairs to be passed into your templates.
 # name: value
 Name: alea
-region: europe-west1-c
+region: eu-central-1
 
 ## Persistent Storage Configuration
 #
@@ -23,13 +23,17 @@ region: europe-west1-c
 #    - iopsPerGB: iops string value for AWS type storage
 #
 storage:
+  # glacialClassName: slowest
   standardClassName: slow
   ssdClassName: fast
-  provisioner: kubernetes.io/gce-pd
-  standardType: pd-standard
-  ssdType: pd-ssd
-  zone: europe-west1-c
-  iopsPerGB: "10" # for AWS
+  # iopsClassName: fastest
+  provisioner: kubernetes.io/aws-ebs
+  # glacialType: sc1    # Cold HDD,                 500GiB - 16TB
+  standardType: st1   # Throughput Optimized HDD, 500GiB - 16TB
+  ssdType: gp2        # General Purpose SSD,      1GiB - 16TB
+  # iopsSsdType: io1    # Provisioned IOPS SSD,     4GiB - 16TB
+  zone: eu-central-1
+  iopsPerGB: "50"     # for AWS, iopsSSD only
 
 etcd:
   PeerPort: 2380
@@ -67,7 +71,7 @@ postgres:
 redis:
   diskName: redis-data-disk
   storageClassName: slow
-  diskSize: 200Gi
+  diskSize: 500Gi # Minimum value
   imageTag: latest
 
 controller:
