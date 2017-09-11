@@ -31,18 +31,6 @@ storage:
   zone: europe-west1-c
   iopsPerGB: "10" # for AWS
 
-etcd:
-  PeerPort: 2380
-  ClientPort: 2379
-  Component: "etcd"
-  Replicas: 3
-  Image: "gcr.io/google_containers/etcd-amd64"
-  ImageTag: "2.2.5"
-  ImagePullPolicy: "Always"
-  Cpu: "100m"
-  Memory: "512Mi"
-  Storage: "1Gi"
-
 mongo:
   diskName: mongodb-data-disk
   storageClassName: fast
@@ -55,12 +43,12 @@ mongo:
   dbDatabase: "alea-controller"
 
 postgres:
-  imageTag: latest
+  imageTag: centos7-9.6-1.5.1 # See: https://hub.docker.com/r/crunchydata/crunchy-postgres/tags/
   imagePullPolicy: IfNotPresent
   diskNamePrefix: pg-data-disk
   storageClassName: fast
   diskSize: 200Gi
-  username: stolon
+  username: alea
   password: password
   database: backing_services
 

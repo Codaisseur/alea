@@ -10,6 +10,7 @@ spec:
     storage: {{ .Values.mongo.diskSize }}
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
   gcePersistentDisk:
     pdName: {{ .Values.mongo.diskName | quote }}
     fsType: "ext4"
