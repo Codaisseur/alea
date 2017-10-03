@@ -28,12 +28,9 @@ spec:
               name: http
           env:
             - name: "STOLON_PG_SU_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: stolon
-                  key: password
+              value: {{ .Values.postgres.password }}
             - name: "DATABASE_URL"
-              value: "postgres://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@stolon-proxy-service.services:5432/{{ .Values.postgres.database }}"
+              value: "postgres://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@pgset-master.services:5432/{{ .Values.postgres.database }}"
             - name: "MEMCACHED_SERVERS"
               value: "memcached-1.services,memcached-2.services"
             - name: "MONGODB_URL"

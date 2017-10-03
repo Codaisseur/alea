@@ -9,7 +9,7 @@ install: build
 	if [ -f controller-ssl-${CLOUDEXT}.yaml ]; then kubectl create -f controller-ssl-${CLOUDEXT}.yaml; fi
 
 upgrade: build
-	helm upgrade alea --namespace services --values=custom.yaml alea
+	helm upgrade alea --namespace services --values=settings.yaml alea
 
 clean:
 	helm delete alea --purge

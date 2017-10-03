@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: pgset
+spec:
+  serviceName: pgset
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: pgset
+        name: pgset-replica
+    spec:
+      serviceAccount: alea-sa
+      securityContext:
+        fsGroup: 26
+      containers:
+      - name: pgset
+        image: "crunchydata/crunchy-postgres:{{ default "latest" .Values.postgres.imageTag }}"
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: PG_MASTER_USER
+          value: master
+        - name: PGHOST
+          value: "/tmp"
+        - name: PG_MODE
+          value: set
+        - name: PG_MASTER_HOST
+          value: pgset-master
+        - name: PG_MASTER_PORT
+          value: '5432'
+        - name: PG_MASTER_PASSWORD
+          value: {{ default "password" .Values.postgres.password | quote }}
+        - name: PG_USER
+          value: {{ default "alea" .Values.postgres.username }}
+        - name: PG_PASSWORD
+          value: {{ default "password" .Values.postgres.password | quote }}
+        - name: PG_DATABASE
+          value: {{ default "backing_services" .Values.postgres.database }}
+        - name: PG_ROOT_PASSWORD
+          value: {{ default "password" .Values.postgres.password | quote }}
+        volumeMounts:
+        - name: pgdata
+          mountPath: "/pgdata"
+          readOnly: false
+
+  volumeClaimTemplates:
+  - metadata:
+      name: pgdata
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      storageClassName: "{{ .Values.postgres.storageClassName }}"
+      resources:
+        requests:
+          storage: {{ .Values.postgres.diskSize }}
