@@ -64,7 +64,7 @@ class PostgresDatabase < ApplicationRecord
     `PGPASSWORD=#{connection_config[:password]} \
       psql --host #{connection_config[:host]} \
         --port #{connection_config[:port]} \
-        -U #{connection_config[:username]} \
+        -U postgres \
         -d template1 \
         -c "#{query};"`
   end
