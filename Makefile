@@ -1,4 +1,4 @@
-export VERSION=0.1.0
+export VERSION=0.2.0
 
 build:
 	docker build -t quay.io/codaisseur/alea-controller \
