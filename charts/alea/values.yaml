@@ -59,7 +59,7 @@ redis:
   imageTag: latest
 
 controller:
-  imageTag: v0.1.0 # latest
+  imageTag: v0.2.0 # latest
   imagePullPolicy: "Always" # "IfNotPresent"
   # Create a secret by running:
   # docker run --rm quay.io/codaisseur/alea-controller rails secret
