@@ -2,6 +2,8 @@
 
 [![](https://quay.io/repository/codaisseur/alea-controller/status)](https://quay.io/repository/codaisseur/alea-controller)
 
+> # :warning: Discontinued / No longer maintained. This stuff may still work... or not...
+
 At [Codaisseur](https://www.codaisseur.com) we want to provide a Heroku like environment for students. We <3 [Deis Workflow](https://deis.com/) as do our students, as you can see in this picture.
 
 [![](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)](http://cd.sseu.re/Cksa06GXIAA7cDa.jpg)
